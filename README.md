@@ -16,9 +16,9 @@ A web-based tool to convert 2D floorplans into interactive 3D scenes. Draw a flo
 
 ## Prerequisites
 
-Node.js (version 16 or higher recommended)
-npm (comes with Node.js)
-A modern web browser (e.g., Chrome, Firefox, Edge)
+- Node.js (version 16 or higher recommended)
+- npm (comes with Node.js)
+- A modern web browser (e.g., Chrome, Firefox, Edge)
 
 # Installation
 
