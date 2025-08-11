@@ -13,14 +13,15 @@
         <link rel="stylesheet" href="styles.css" />
     </head>
     <body>
-        <div id="container2D" class="container-fluid">
+        <button id="switchMode">Switch to 3D</button>
+        <div id="container2D">
             <canvas id="canvas2D"></canvas>
-            <button id="switchMode">Switch to 3D</button>
         </div>
 
-        <div id="container3D" class="container-fluid container3d-wrapper">
+        <!-- start with container3D hidden -->
+        <div id="container3D" style="display: none;">
             <div class="row h-100">
-                <!-- Card Column (1/3 width) -->
+                <!-- Bootstrap Column (2/12 width) -->
                 <div class="col-12 col-md-2">
                     <div class="card shadow-sm h-100">
                         <div class="card-body">
@@ -132,9 +133,8 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Canvas3D Column (2/3 width) -->
-                <div class="col-12 col-md-8">
+                <!-- Bootstrap Column (10/12 width) -->
+                <div class="col-12 col-md-10">
                     <canvas id="canvas3D"></canvas>
                 </div>
             </div>
