@@ -1,3 +1,5 @@
+import paper from 'paper';
+
 const canvas2D = document.getElementById("canvas2D");
 export { canvas2D };
 
