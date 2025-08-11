@@ -1,3 +1,8 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+
 const canvas3D = document.getElementById("canvas3D");
 
 let scene, camera, renderer, controls, transformControls;
@@ -25,12 +30,13 @@ export function init3D() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   // Orbit controls
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
   camera.position.set(10, 10, 10);
   controls.update();
+  controls.addEventListener( 'change', render );
 
   // Transform controls
-  transformControls = new THREE.TransformControls(camera, renderer.domElement);
+  transformControls = new TransformControls(camera, renderer.domElement);
   transformControls.addEventListener("change", render);
   transformControls.addEventListener("dragging-changed", function (event) {
     controls.enabled = !event.value;
@@ -38,7 +44,8 @@ export function init3D() {
   transformControls.showX = true;
   transformControls.showY = false;
   transformControls.showZ = true;
-  scene.add(transformControls);
+  const gizmo = transformControls.getHelper();
+  scene.add( gizmo );
 
   // Add lights
   const ambientLight = new THREE.AmbientLight(0x404040);
@@ -119,7 +126,7 @@ function addObjectToScene(model) {
   });
 
   // let material_obj = new THREE.MeshBasicMaterial( { color: 0x6E6E6E} );
-  const objLoader = new THREE.OBJLoader();
+  const objLoader = new OBJLoader();
   objLoader.load(`${model}.obj`, function (object) {
     switch (model) {
       case "Chair":

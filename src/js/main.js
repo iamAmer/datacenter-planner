@@ -1,5 +1,6 @@
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import paper from 'paper';
+import paper from "paper";
+import * as THREE from "three";
 import { createGrid } from "./floor2d.js";
 import { init3D, scene, camera, renderer } from "./scene3d.js";
 
