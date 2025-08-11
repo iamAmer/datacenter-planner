@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A tool to convert 2D floorplans into 3D scenes",
   "main": "index.html",
+  "type": "module",
   "scripts": {
     "start": "vite",
     "build": "vite build",
