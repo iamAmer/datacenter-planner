@@ -48,10 +48,10 @@ export function init3D() {
   scene.add( gizmo );
 
   // Add lights
-  const ambientLight = new THREE.AmbientLight(0x404040);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
   directionalLight.position.set(5, 10, 7.5);
   scene.add(directionalLight);
 
@@ -207,8 +207,6 @@ function exportSceneToJson() {
 
   console.log(JSON.stringify(sceneData, null, 2)); // Pretty print JSON with 2-space indent
 }
-
-init3D();
 
 // Add event listener for keypress
 window.addEventListener("keydown", (event) => {
