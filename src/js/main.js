@@ -95,3 +95,12 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+window.selectImage = (imageName) => {
+  document.getElementById(
+    'selectedImageText'
+  ).innerText = `Selected model: ${imageName}`
+  document
+    .getElementById('selectedImageText')
+    .setAttribute('data-alt', `${imageName}`)
+}
