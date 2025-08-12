@@ -89,7 +89,9 @@ function onMouseClick(event) {
   // Check for intersection with objects in the scene
   const intersects = raycaster.intersectObjects(models, true);
 
+  const selectedModelElem = document.getElementById('selectedModel');
   if (intersects.length > 0) {
+    selectedModelElem.innerText = `Selected: ${intersects[0].object.name}`;
     if (draggableObject) {
       transformControls.detach();
     }
@@ -97,6 +99,7 @@ function onMouseClick(event) {
     draggableObject = intersects[0].object;
     transformControls.attach(draggableObject);
   } else {
+    selectedModelElem.innerText = "No selected model";
     if (draggableObject) {
       transformControls.detach();
       draggableObject = null;
@@ -148,6 +151,7 @@ function addObjectToScene(model) {
 
 function deleteCube() {
   const intersects = raycaster.intersectObjects(models, true);
+  console.log(intersects[0].object)
 
   // Check if there are any intersected objects
   if (intersects.length > 0) {
@@ -237,7 +241,7 @@ add_model.addEventListener(
   "click",
   () => {
     let model = document
-      .getElementById("selectedImageText")
+      .getElementById("dropdownMenuButton")
       .getAttribute("data-alt");
     addObjectToScene(model);
   },

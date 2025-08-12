@@ -97,10 +97,7 @@ window.addEventListener("resize", () => {
 });
 
 window.selectImage = (imageName) => {
-  document.getElementById(
-    'selectedImageText'
-  ).innerText = `Selected model: ${imageName}`
-  document
-    .getElementById('selectedImageText')
-    .setAttribute('data-alt', `${imageName}`)
+  const element = document.getElementById('dropdownMenuButton');
+  element.innerText = `${imageName} `;
+  element.setAttribute('data-alt', `${imageName}`);
 }

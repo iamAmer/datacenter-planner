@@ -19,70 +19,54 @@
     <div id="container3D" style="display: none;">
         <div class="row h-100">
             <!-- Bootstrap Column (2/12 width) -->
-            <div class="col-12 col-md-2">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Add Models</h5>
-
-                        <form>
-                            <!-- Dropdown with Thumbnails -->
-                            <div class="mb-3">
-                                <label class="form-label">Choose a model:</label>
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button"
-                                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Select a model
-                                    </button>
-                                    <ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton" style="
-                                                max-height: 300px;
-                                                overflow-y: auto;
-                                            ">
-                                        <!-- Cooler -->
-                                        <li class="dropdown-item" onclick="selectImage('Cooler')">
-                                            <img src="cooler.jpg" alt="cooler" class="img-thumbnail" style="
-                                                        width: 50px;
-                                                        height: 50px;
-                                                    " />
-                                            <span>Cooler</span>
-                                        </li>
-                                        <!-- Chair -->
-                                        <li class="dropdown-item" onclick="selectImage('Chair')">
-                                            <img src="chair.jpg" alt="chair" class="img-thumbnail" style="
-                                                        width: 50px;
-                                                        height: 50px;
-                                                    " />
-                                            <span>Chair</span>
-                                        </li>
-                                        <!-- Table -->
-                                        <li class="dropdown-item" onclick="selectImage('Table')">
-                                            <img src="table.jpg" alt="table" class="img-thumbnail" style="
-                                                        width: 50px;
-                                                        height: 50px;
-                                                    " />
-                                            <span>Table</span>
-                                        </li>
-                                    </ul>
-                                </div>
+            <aside class="col-12 col-md-2">
+                <div class="m-3 h-100">
+                    <div>
+                        <!-- Dropdown with Thumbnails -->
+                        <div class="mb-3">
+                            <p>Add new model</p>
+                            <div class="dropdown" data-alt="none">
+                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                    id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Choose a model
+                                </button>
+                                <ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton" style="max-height: 300px; overflow-y: auto;">
+                                    <!-- Cooler -->
+                                    <li class="dropdown-item" onclick="selectImage('Cooler')">
+                                        <img src="cooler.jpg" alt="cooler" class="img-thumbnail" style="width: 50px; height: 50px;" />
+                                        <span>Cooler</span>
+                                    </li>
+                                    <!-- Chair -->
+                                    <li class="dropdown-item" onclick="selectImage('Chair')">
+                                        <img src="chair.jpg" alt="chair" class="img-thumbnail" style="width: 50px; height: 50px;" />
+                                        <span>Chair</span>
+                                    </li>
+                                    <!-- Table -->
+                                    <li class="dropdown-item" onclick="selectImage('Table')">
+                                        <img src="table.jpg" alt="table" class="img-thumbnail" style="width: 50px; height: 50px;" />
+                                        <span>Table</span>
+                                    </li>
+                                </ul>
                             </div>
+                        </div>
 
-                            <button id="add_model" type="button" class="btn btn-primary w-100 mb-3">
-                                Add Model
-                            </button>
-                            <hr />
-                            <button id="delete_model" type="button" class="btn btn-danger w-100">
-                                Delete Model
-                            </button>
-                        </form>
-
-                        <p id="selectedImageText" data-alt="none">
-                            Selected Model: None
+                        <button id="add_model" type="button" class="btn btn-primary w-100 mb-3">
+                            Add Model
+                        </button>
+                        <hr />
+                        <p id="selectedModel">
+                            No selected model
                         </p>
+                        <button id="delete_model" type="button" class="btn btn-danger w-100 mb-3">
+                            Delete Selected
+                        </button>
+                        <hr />
                         <button id="export_scene" type="button" class="btn btn-secondary w-101">
                             Export 3D
                         </button>
                     </div>
                 </div>
-            </div>
+            </aside>
             <!-- Bootstrap Column (10/12 width) -->
             <div class="col-12 col-md-10">
                 <canvas id="canvas3D"></canvas>
