@@ -27,7 +27,7 @@ export function init3D() {
   );
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas3D });
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize((window.innerWidth)*(10/12), window.innerHeight);
 
   // Orbit controls
   controls = new OrbitControls(camera, renderer.domElement);
@@ -253,10 +253,3 @@ remove_model.addEventListener("click", deleteCube, false);
 
 let export_scene = document.getElementById("export_scene");
 export_scene.addEventListener("click", exportSceneToJson, false);
-
-// Resize canvas on window resize
-window.addEventListener("resize", function () {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
