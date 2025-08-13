@@ -27,11 +27,12 @@ export function init3D() {
   )
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas3D })
-  renderer.setSize(window.innerWidth * (10 / 12), window.innerHeight)
+  renderer.setSize(window.innerWidth, window.innerHeight)
 
   // Orbit controls
   controls = new OrbitControls(camera, renderer.domElement)
-  camera.position.set(10, 10, 10)
+  controls.zoomToCursor = true
+  camera.position.set(5, 20, 20)
   controls.update()
   controls.addEventListener('change', render)
 
@@ -73,6 +74,7 @@ export function init3D() {
 
   // Event listeners for drag functionality
   window.addEventListener('click', onMouseClick)
+  window.addEventListener('resize', onWindowResize);
 }
 
 function onMouseClick(event) {
@@ -253,3 +255,10 @@ remove_model.addEventListener('click', deleteCube, false)
 
 let export_scene = document.getElementById('export_scene')
 export_scene.addEventListener('click', exportSceneToJson, false)
+
+// Resize canvas on window resize
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
+}
