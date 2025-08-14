@@ -15,7 +15,6 @@ function convertPathsTo3D() {
   }
 
   paper.project.activeLayer.children.forEach((item) => {
-    console.log(item)
     if (
       item instanceof paper.Path &&
       item.segments.length >= 2 &&
@@ -55,13 +54,12 @@ function convertPathsTo3D() {
 
       wall.position.x = startX + endX
       wall.position.y = 0
-      wall.position.z = startZ + endZ
+      // Paper.js: Y increases downward (typical web/screen coordinates) Three.js: Z increases upward (typical 3D coordinates)
+      wall.position.z = -(startZ + endZ)
 
       const angle = Math.atan2(endZ - startZ, endX - startX)
-      wall.rotation.y = -angle
+      wall.rotation.y = angle
       wall.scale.set(2, 2, 2)
-      // After scaling, set the wall's position Y to half of the scaled height
-      // wall.position.y = wallHeight * wall.scale.y / 2;
       wall.name = 'wall'
       scene.add(wall)
       walls.push(wall)
