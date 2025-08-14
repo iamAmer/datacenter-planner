@@ -54,3 +54,12 @@ npm start
 
 Access the webpage:
 Open your browser and navigate to http://localhost:5173 (or the port shown in the terminal). The tool will load, displaying the 2D canvas for drawing floorplans.
+
+### Build the App and preview
+
+Build and preview the app for production using Vite:
+```bash
+npm run build
+npm run preview
+```
+Files are now bundled by default into the [dist](/dist/) folder.

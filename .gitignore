@@ -1,2 +1,8 @@
 node_modules
 LICENSE
+
+# Vite build files
+dist
+
+# IDE
+.continue
