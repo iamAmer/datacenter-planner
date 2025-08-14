@@ -136,7 +136,7 @@ function addObjectToScene(model) {
     switch (model) {
       case 'Chair':
         aux_mesh_name(object, material_obj, 'chair')
-        object.scale.setScalar(0.04)
+        object.scale.setScalar(0.05)
         break
       case 'Cooler':
         aux_mesh_name(object, material_obj, 'cooler')
