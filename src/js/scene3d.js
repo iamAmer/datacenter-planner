@@ -2,12 +2,14 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { TransformControls } from 'three/addons/controls/TransformControls.js'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
+import { walls } from './main.js'
 
 const canvas3D = document.getElementById('canvas3D')
 
 let scene, camera, renderer, controls, transformControls
 let raycaster
 let draggableObject = null
+let floor
 let models = []
 let MODELS_NAME = ['cooler', 'chair', 'table', 'wall']
 let particleSystems = []
@@ -63,7 +65,7 @@ export function init3D() {
     color: 0xdddddd,
     side: THREE.DoubleSide,
   })
-  const floor = new THREE.Mesh(floorGeometry, floorMaterial)
+  floor = new THREE.Mesh(floorGeometry, floorMaterial)
   floor.rotation.x = -Math.PI / 2
   floor.position.y = 0
   scene.add(floor)
@@ -160,12 +162,13 @@ function addObjectToScene(model) {
 }
 
 function createCoolerParticles(coolerObject) {
-  const particleCount = 1000
+  const particleCount = 500
   const particlesGeometry = new THREE.BufferGeometry()
   const positions = new Float32Array(particleCount * 3)
   const velocities = new Float32Array(particleCount * 3)
   const lifetimes = new Float32Array(particleCount)
   const maxLifetime = new Float32Array(particleCount)
+  const colors = new Float32Array(particleCount * 3) // Add color attribute
 
   // Get cooler's bounding box to determine particle spawn position
   const box = new THREE.Box3().setFromObject(coolerObject)
@@ -181,7 +184,8 @@ function createCoolerParticles(coolerObject) {
       positions,
       velocities,
       lifetimes,
-      maxLifetime
+      maxLifetime,
+      colors
     )
   }
 
@@ -201,13 +205,14 @@ function createCoolerParticles(coolerObject) {
     'maxLifetime',
     new THREE.BufferAttribute(maxLifetime, 1)
   )
+  particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3)) // Add color attribute
 
   const particlesMaterial = new THREE.PointsMaterial({
-    color: 0x87ceeb, // Light blue for air
     size: 0.05,
     transparent: true,
     opacity: 0.6,
     blending: THREE.AdditiveBlending,
+    vertexColors: true // Enable vertex colors
   })
 
   const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial)
@@ -232,6 +237,7 @@ function updateParticles() {
     const velocities = geometry.attributes.velocity.array
     const lifetimes = geometry.attributes.lifetime.array
     const maxLifetime = geometry.attributes.maxLifetime.array
+    const colors = geometry.attributes.color.array;
 
     for (let i = 0; i < positions.length; i += 3) {
       const particleIndex = i / 3
@@ -245,9 +251,11 @@ function updateParticles() {
           positions,
           velocities,
           lifetimes,
-          maxLifetime
+          maxLifetime,
+          colors
         )
       }
+
       // Update position
       positions[i] += velocities[i]
       positions[i + 1] += velocities[i + 1]
@@ -257,8 +265,48 @@ function updateParticles() {
       velocities[i] += (Math.random() - 0.5) * 0.001
       velocities[i + 1] += (Math.random() - 0.5) * 0.001
       velocities[i + 2] += (Math.random() - 0.5) * 0.02 // it expands along z-axis orthogonal to main direction x
-    }
 
+      // Check for collisions
+      const particlePosition = new THREE.Vector3(
+        positions[i],
+        positions[i + 1],
+        positions[i + 2]
+      )
+      
+      // Convert particle position from local cooler space to world space
+      const worldPosition = particlePosition.clone()
+      particleData.cooler.localToWorld(worldPosition)
+      
+      // Set up raycaster from particle position
+      const rayDirection = new THREE.Vector3(
+        velocities[i],
+        velocities[i + 1], 
+        velocities[i + 2]
+      ).normalize()
+      
+      raycaster.set(worldPosition, rayDirection)
+      
+      // Get all objects except the cooler itself and particles
+      const filteredObjects = models.filter(obj => obj !== particleData.cooler)
+      const objectsToTest = [...filteredObjects, floor, ...walls]
+      
+      const intersects = raycaster.intersectObjects(objectsToTest, true)
+      
+      // Check if collision is close enough (within particle size)
+      if (intersects.length > 0 && intersects[0].distance < 0.1) {
+        // Change particle color on collision
+        colors[i] = 1.0     // Red
+        colors[i + 1] = 0.5 // Orange-ish
+        colors[i + 2] = 0.0 // Blue = 0
+        
+        // Optional: bounce the particle or reset its velocity
+        velocities[i] *= 0
+        velocities[i + 1] *= 0
+        velocities[i + 2] *= 0
+      }
+    }
+    
+    geometry.attributes.color.needsUpdate = true
     geometry.attributes.position.needsUpdate = true
     geometry.attributes.lifetime.needsUpdate = true
   })
@@ -269,7 +317,8 @@ function initializeParticleProperties(
   positions,
   velocities,
   lifetimes,
-  maxLifetime
+  maxLifetime,
+  colors
 ) {
   // Initialize position
   positions[index * 3] = 0 // x at spawn position
@@ -280,6 +329,11 @@ function initializeParticleProperties(
   velocities[index * 3] = Math.random() * 1.5 // main flow direction (along X-axis)
   velocities[index * 3 + 1] = -(Math.random() * 0.1 + 0.05) // slight downward flow
   velocities[index * 3 + 2] = (Math.random() - 0.5) * 0.02 // slight z variation
+
+  // Initialize color
+  colors[index * 3] = 0.5; // Red
+  colors[index * 3 + 1] = 0.8; // Green
+  colors[index * 3 + 2] = 1.0; // Blue
 
   // Initialize lifetime
   lifetimes[index] = Math.random() * 1000
