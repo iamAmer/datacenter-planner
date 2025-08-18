@@ -7,7 +7,8 @@ import { walls } from './main.js'
 const canvas3D = document.getElementById('canvas3D')
 
 let scene, camera, renderer, controls, transformControls
-let raycaster
+let raycasterMouse
+let raycasterCollision
 let draggableObject = null
 let floor
 let models = []
@@ -71,7 +72,8 @@ export function init3D() {
   scene.add(floor)
 
   // Raycaster and mouse initialization
-  raycaster = new THREE.Raycaster()
+  raycasterMouse = new THREE.Raycaster()
+  raycasterCollision = new THREE.Raycaster()
 
   animate()
 
@@ -89,10 +91,10 @@ function onMouseClick(event) {
   )
 
   // Update the raycaster with camera and mouse
-  raycaster.setFromCamera(mouse, camera)
+  raycasterMouse.setFromCamera(mouse, camera)
 
   // Check for intersection with objects in the scene
-  const intersects = raycaster.intersectObjects(models, true)
+  const intersects = raycasterMouse.intersectObjects(models, true)
 
   const selectedModelElem = document.getElementById('selectedModel')
   if (intersects.length > 0) {
@@ -284,13 +286,13 @@ function updateParticles() {
         velocities[i + 2]
       ).normalize()
       
-      raycaster.set(worldPosition, rayDirection)
+      raycasterCollision.set(worldPosition, rayDirection)
       
       // Get all objects except the cooler itself and particles
       const filteredObjects = models.filter(obj => obj !== particleData.cooler)
       const objectsToTest = [...filteredObjects, floor, ...walls]
       
-      const intersects = raycaster.intersectObjects(objectsToTest, true)
+      const intersects = raycasterCollision.intersectObjects(objectsToTest, true)
       
       // Check if collision is close enough (within particle size)
       if (intersects.length > 0 && intersects[0].distance < 0.1) {
@@ -340,8 +342,8 @@ function initializeParticleProperties(
   maxLifetime[index] = 1000 + Math.random() * 500
 }
 
-function deleteCube() {
-  const intersects = raycaster.intersectObjects(models, true)
+function deleteObject() {
+  const intersects = raycasterMouse.intersectObjects(models, true)
   console.log(intersects[0].object)
 
   // Check if there are any intersected objects
@@ -440,7 +442,7 @@ add_model.addEventListener(
 )
 
 let remove_model = document.getElementById('delete_model')
-remove_model.addEventListener('click', deleteCube, false)
+remove_model.addEventListener('click', deleteObject, false)
 
 let export_scene = document.getElementById('export_scene')
 export_scene.addEventListener('click', exportSceneToJson, false)
