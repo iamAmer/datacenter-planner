@@ -8,6 +8,9 @@ createGrid()
 init3D()
 
 let walls = []
+
+export { walls }
+
 function convertPathsTo3D() {
   if (walls.length > 0) {
     walls.forEach((wall) => scene.remove(wall))
