@@ -207,7 +207,10 @@ function createCoolerParticles(coolerObject) {
     'maxLifetime',
     new THREE.BufferAttribute(maxLifetime, 1)
   )
-  particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3)) // Add color attribute
+  particlesGeometry.setAttribute(
+    'color',
+    new THREE.BufferAttribute(colors, 3)
+  )
 
   const particlesMaterial = new THREE.PointsMaterial({
     size: 0.05,
