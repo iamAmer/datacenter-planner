@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { TransformControls } from 'three/addons/controls/TransformControls.js'
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
-import { createCoolerParticles, updateCoolerParticles } from './coolerParticles.js'
+import { updateCoolerParticles } from './coolerParticles.js'
+import { addObjectToScene, deleteObject } from './3dObjects.js'
 
 const canvas3D = document.getElementById('canvas3D')
 
@@ -14,7 +14,17 @@ let floor
 let models = []
 let MODELS_NAME = ['cooler', 'chair', 'table', 'wall']
 
-export { scene, camera, canvas3D, renderer, raycasterCollision, models, floor }
+export {
+  scene,
+  camera,
+  canvas3D,
+  renderer,
+  raycasterMouse,
+  raycasterCollision,
+  transformControls,
+  models,
+  floor,
+}
 
 export function init3D() {
   scene = new THREE.Scene()
@@ -117,76 +127,6 @@ function onMouseClick(event) {
   } else {
     selectedModelElem.innerText = 'No selected model'
     if (draggableObject) {
-      transformControls.detach()
-      draggableObject = null
-    }
-  }
-}
-
-function addObjectToScene(model) {
-  console.log(model)
-  // Use a material that responds to light
-  let material_obj = new THREE.MeshStandardMaterial({
-    color: 0x6e6e6e, // Gray color
-    metalness: 0.5, // How metallic the material appears (0 = non-metal, 1 = metal)
-    roughness: 0.7, // How rough the surface is (0 = smooth, 1 = rough)
-  })
-
-  // let material_obj = new THREE.MeshBasicMaterial( { color: 0x6E6E6E} );
-  const objLoader = new OBJLoader()
-  objLoader.load(`${model}.obj`, function (object) {
-    switch (model) {
-      case 'Chair':
-        aux_mesh_name(object, material_obj, 'chair')
-        object.scale.setScalar(0.05)
-        break
-      case 'Cooler':
-        aux_mesh_name(object, material_obj, 'cooler')
-        object.scale.setScalar(0.01)
-        createCoolerParticles(object)
-        break
-      case 'Table':
-        aux_mesh_name(object, material_obj, 'table')
-        object.scale.setScalar(0.8)
-    }
-    scene.add(object)
-    models.push(object)
-  })
-}
-
-function aux_mesh_name(object, material, name) {
-  object.traverse(function (child) {
-    if (child.isMesh) child.material = material
-    child.name = name
-  })
-}
-
-function deleteObject() {
-  const intersects = raycasterMouse.intersectObjects(models, true)
-  console.log(intersects[0].object)
-
-  // Check if there are any intersected objects
-  if (intersects.length > 0) {
-    // Get the parent object that was added to the models array
-    let draggableObject = intersects[0].object
-
-    // Traverse up the hierarchy to find the root parent that was added to models
-    while (draggableObject.parent && !models.includes(draggableObject)) {
-      draggableObject = draggableObject.parent
-    }
-
-    // Remove the object from the scene if it's part of models
-    if (models.includes(draggableObject)) {
-      console.log(draggableObject)
-      scene.remove(draggableObject)
-
-      // Find and remove the object from the models array
-      const index = models.indexOf(draggableObject)
-      if (index > -1) {
-        models.splice(index, 1)
-      }
-
-      // Detach transform controls and reset the draggableObject variable
       transformControls.detach()
       draggableObject = null
     }
