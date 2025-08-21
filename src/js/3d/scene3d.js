@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { TransformControls } from 'three/addons/controls/TransformControls.js'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
-import { walls } from './main.js'
+import { walls } from './pathsTo3d.js'
 
 const canvas3D = document.getElementById('canvas3D')
 
@@ -16,10 +16,6 @@ let MODELS_NAME = ['cooler', 'chair', 'table', 'wall']
 let particleSystems = []
 
 export { scene, camera, canvas3D, renderer }
-
-function render() {
-  renderer.render(scene, camera)
-}
 
 export function init3D() {
   scene = new THREE.Scene()
@@ -79,7 +75,16 @@ export function init3D() {
 
   // Event listeners for drag functionality
   window.addEventListener('click', onMouseClick)
-  window.addEventListener('resize', onWindowResize)
+}
+
+function animate() {
+  requestAnimationFrame(animate)
+  updateParticles()
+  render()
+}
+
+function render() {
+  renderer.render(scene, camera)
 }
 
 function onMouseClick(event) {
@@ -119,19 +124,6 @@ function onMouseClick(event) {
   }
 }
 
-function animate() {
-  requestAnimationFrame(animate)
-  updateParticles()
-  render()
-}
-
-function aux_mesh_name(object, material, name) {
-  object.traverse(function (child) {
-    if (child.isMesh) child.material = material
-    child.name = name
-  })
-}
-
 function addObjectToScene(model) {
   console.log(model)
   // Use a material that responds to light
@@ -160,6 +152,13 @@ function addObjectToScene(model) {
     }
     scene.add(object)
     models.push(object)
+  })
+}
+
+function aux_mesh_name(object, material, name) {
+  object.traverse(function (child) {
+    if (child.isMesh) child.material = material
+    child.name = name
   })
 }
 
@@ -207,17 +206,14 @@ function createCoolerParticles(coolerObject) {
     'maxLifetime',
     new THREE.BufferAttribute(maxLifetime, 1)
   )
-  particlesGeometry.setAttribute(
-    'color',
-    new THREE.BufferAttribute(colors, 3)
-  )
+  particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
 
   const particlesMaterial = new THREE.PointsMaterial({
     size: 0.05,
     transparent: true,
     opacity: 0.6,
     blending: THREE.AdditiveBlending,
-    vertexColors: true // Enable vertex colors
+    vertexColors: true, // Enable vertex colors
   })
 
   const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial)
@@ -242,7 +238,7 @@ function updateParticles() {
     const velocities = geometry.attributes.velocity.array
     const lifetimes = geometry.attributes.lifetime.array
     const maxLifetime = geometry.attributes.maxLifetime.array
-    const colors = geometry.attributes.color.array;
+    const colors = geometry.attributes.color.array
 
     for (let i = 0; i < positions.length; i += 3) {
       const particleIndex = i / 3
@@ -277,40 +273,45 @@ function updateParticles() {
         positions[i + 1],
         positions[i + 2]
       )
-      
+
       // Convert particle position from local cooler space to world space
       const worldPosition = particlePosition.clone()
       particleData.cooler.localToWorld(worldPosition)
-      
+
       // Set up raycaster from particle position
       const rayDirection = new THREE.Vector3(
         velocities[i],
-        velocities[i + 1], 
+        velocities[i + 1],
         velocities[i + 2]
       ).normalize()
-      
+
       raycasterCollision.set(worldPosition, rayDirection)
-      
+
       // Get all objects except the cooler itself and particles
-      const filteredObjects = models.filter(obj => obj !== particleData.cooler)
+      const filteredObjects = models.filter(
+        (obj) => obj !== particleData.cooler
+      )
       const objectsToTest = [...filteredObjects, floor, ...walls]
-      
-      const intersects = raycasterCollision.intersectObjects(objectsToTest, true)
-      
+
+      const intersects = raycasterCollision.intersectObjects(
+        objectsToTest,
+        true
+      )
+
       // Check if collision is close enough (within particle size)
       if (intersects.length > 0 && intersects[0].distance < 0.1) {
         // Change particle color on collision
-        colors[i] = 1.0     // Red
+        colors[i] = 1.0 // Red
         colors[i + 1] = 0.5 // Orange-ish
         colors[i + 2] = 0.0 // Blue = 0
-        
+
         // Optional: bounce the particle or reset its velocity
         velocities[i] *= 0
         velocities[i + 1] *= 0
         velocities[i + 2] *= 0
       }
     }
-    
+
     geometry.attributes.color.needsUpdate = true
     geometry.attributes.position.needsUpdate = true
     geometry.attributes.lifetime.needsUpdate = true
@@ -336,9 +337,9 @@ function initializeParticleProperties(
   velocities[index * 3 + 2] = (Math.random() - 0.5) * 0.02 // slight z variation
 
   // Initialize color
-  colors[index * 3] = 0.5; // Red
-  colors[index * 3 + 1] = 0.8; // Green
-  colors[index * 3 + 2] = 1.0; // Blue
+  colors[index * 3] = 0.5 // Red
+  colors[index * 3 + 1] = 0.8 // Green
+  colors[index * 3 + 2] = 1.0 // Blue
 
   // Initialize lifetime
   lifetimes[index] = Math.random() * 1000
@@ -377,11 +378,10 @@ function deleteObject() {
   }
 }
 
-let localPosition = new THREE.Vector3(0, 0, 0)
-let box = new THREE.Box3()
-let size = new THREE.Vector3(0, 0, 0)
-
 function exportSceneToJson() {
+  let localPosition = new THREE.Vector3(0, 0, 0)
+  let box = new THREE.Box3()
+  let size = new THREE.Vector3(0, 0, 0)
   const sceneData = {}
 
   scene.traverse((object) => {
@@ -432,6 +432,12 @@ window.addEventListener('keydown', (event) => {
   }
 })
 
+window.selectImage = (imageName) => {
+  const element = document.getElementById('dropdownMenuButton')
+  element.innerText = `${imageName} `
+  element.setAttribute('data-alt', `${imageName}`)
+}
+
 let add_model = document.getElementById('add_model')
 add_model.addEventListener(
   'click',
@@ -449,10 +455,3 @@ remove_model.addEventListener('click', deleteObject, false)
 
 let export_scene = document.getElementById('export_scene')
 export_scene.addEventListener('click', exportSceneToJson, false)
-
-// Resize canvas on window resize
-function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight
-  camera.updateProjectionMatrix()
-  renderer.setSize(window.innerWidth, window.innerHeight)
-}
