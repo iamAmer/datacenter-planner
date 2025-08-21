@@ -79,7 +79,7 @@ export function init3D() {
 
 function animate() {
   requestAnimationFrame(animate)
-  updateParticles()
+  updateCoolerParticles()
   render()
 }
 
@@ -180,7 +180,7 @@ function createCoolerParticles(coolerObject) {
   const spawnOffset = new THREE.Vector3(size.x * 30, size.y * 40, 0)
 
   for (let i = 0; i < particleCount; i++) {
-    initializeParticleProperties(
+    initCoolerParticleProps(
       i,
       positions,
       velocities,
@@ -231,7 +231,7 @@ function createCoolerParticles(coolerObject) {
   })
 }
 
-function updateParticles() {
+function updateCoolerParticles() {
   particleSystems.forEach((particleData) => {
     const geometry = particleData.geometry
     const positions = geometry.attributes.position.array
@@ -247,7 +247,7 @@ function updateParticles() {
       lifetimes[particleIndex]++
       if (lifetimes[particleIndex] >= maxLifetime[particleIndex]) {
         // Reset particle
-        initializeParticleProperties(
+        initCoolerParticleProps(
           particleIndex,
           positions,
           velocities,
@@ -318,7 +318,7 @@ function updateParticles() {
   })
 }
 
-function initializeParticleProperties(
+function initCoolerParticleProps(
   index,
   positions,
   velocities,
