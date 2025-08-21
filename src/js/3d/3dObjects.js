@@ -28,10 +28,23 @@ export function addObjectToScene(model) {
       case 'Table':
         aux_mesh_name(object, material_obj, 'table')
         object.scale.setScalar(0.8)
+        break
+      case 'Rack':
+        aux_mesh_name(object, material_obj, 'rack')
+        object.scale.setScalar(1)
+        setRackPosition(object)
+        break
     }
     scene.add(object)
     models.push(object)
   })
+}
+
+function setRackPosition(object) {
+  const box = new THREE.Box3().setFromObject(object);
+  const size = new THREE.Vector3();
+  box.getSize(size);
+  object.translateY(size.y / 2)
 }
 
 function aux_mesh_name(object, material, name) {
