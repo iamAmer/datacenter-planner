@@ -31,7 +31,7 @@ export function addObjectToScene(model) {
         break
       case 'Rack':
         aux_mesh_name(object, material_obj, 'rack')
-        object.scale.setScalar(1)
+        object.scale.setY(1.1)
         setRackPosition(object)
         break
     }
@@ -41,9 +41,9 @@ export function addObjectToScene(model) {
 }
 
 function setRackPosition(object) {
-  const box = new THREE.Box3().setFromObject(object);
-  const size = new THREE.Vector3();
-  box.getSize(size);
+  const box = new THREE.Box3().setFromObject(object)
+  const size = new THREE.Vector3()
+  box.getSize(size)
   object.translateY(size.y / 2)
 }
 
