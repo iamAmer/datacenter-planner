@@ -13,13 +13,15 @@ export function createCoolerParticles(coolerObject) {
   const maxLifetime = new Float32Array(particleCount)
   const colors = new Float32Array(particleCount * 3) // Add color attribute
 
-  // Get cooler's bounding box to determine particle spawn position
-  const box = new THREE.Box3().setFromObject(coolerObject)
-  const size = new THREE.Vector3()
-  box.getSize(size)
+  /**
+   * TODO: consider to delete spawnOffset because offset already defined in initParticles
+   */
+  // // Get cooler's bounding box to determine particle spawn position
+  // const box = new THREE.Box3().setFromObject(coolerObject)
+  // const size = new THREE.Vector3()
+  // box.getSize(size)
 
-  // Assume air flows from the front of the cooler (negative Z direction)
-  const spawnOffset = new THREE.Vector3(size.x * 30, size.y * 40, 0)
+  // const spawnOffset = new THREE.Vector3(size.x * 30, size.y * 40, 0)
 
   for (let i = 0; i < particleCount; i++) {
     initCoolerParticleProps(
@@ -52,9 +54,9 @@ export function createCoolerParticles(coolerObject) {
 
   const particlesMaterial = new THREE.PointsMaterial({
     size: 0.05,
-    transparent: true,
-    opacity: 0.6,
-    blending: THREE.AdditiveBlending,
+    // transparent: true,
+    // opacity: 0.6,
+    // blending: THREE.AdditiveBlending,
     vertexColors: true, // Enable vertex colors
   })
 
@@ -62,14 +64,14 @@ export function createCoolerParticles(coolerObject) {
 
   // Group particles to cooler object
   coolerObject.add(particleSystem)
-  particleSystem.position.copy(spawnOffset)
+  // particleSystem.position.copy(spawnOffset)
 
   // Store reference for updating
   particleSystems.push({
     system: particleSystem,
     geometry: particlesGeometry,
     cooler: coolerObject,
-    spawnOffset: spawnOffset.clone(), // Store original spawn offset for resets
+    // spawnOffset: spawnOffset.clone(), // Store original spawn offset for resets
   })
 }
 
@@ -106,7 +108,7 @@ export function updateCoolerParticles() {
 
       // Add some turbulence
       velocities[i] += (Math.random() - 0.5) * 0.001
-      velocities[i + 1] += (Math.random() - 0.5) * 0.001
+      velocities[i + 1] += (Math.random() - 0.5) * 0.01
       velocities[i + 2] += (Math.random() - 0.5) * 0.02 // it expands along z-axis orthogonal to main direction x
 
       // Check for collisions
@@ -169,18 +171,18 @@ export function initCoolerParticleProps(
   colors
 ) {
   // Initialize position
-  positions[index * 3] = 0 // x at spawn position
-  positions[index * 3 + 1] = (Math.random() - 0.5) * 0.2 // y offset
+  positions[index * 3] = 0 // x no offset
+  positions[index * 3 + 1] = ((Math.random() - 0.5) * 0.2) + 20 // y offset
   positions[index * 3 + 2] = (Math.random() - 0.5) * 40 // z offset
 
   // Initialize velocity
-  velocities[index * 3] = Math.random() * 1.5 // main flow direction (along X-axis)
-  velocities[index * 3 + 1] = -(Math.random() * 0.1 + 0.05) // slight downward flow
+  velocities[index * 3] = Math.random() * 1 // main flow direction (along X-axis)
+  velocities[index * 3 + 1] = -(Math.random() * 0.1 + 0.1) // slight downward flow
   velocities[index * 3 + 2] = (Math.random() - 0.5) * 0.02 // slight z variation
 
   // Initialize color
-  colors[index * 3] = 0.5 // Red
-  colors[index * 3 + 1] = 0.8 // Green
+  colors[index * 3] = 0.1 // Red
+  colors[index * 3 + 1] = 0.5 // Green
   colors[index * 3 + 2] = 1.0 // Blue
 
   // Initialize lifetime
