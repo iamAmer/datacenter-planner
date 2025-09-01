@@ -1,6 +1,7 @@
 import * as THREE from 'three'
-// import { raycasterCollision, models, floor } from './scene3d.js'
-// import { walls } from './pathsTo3d.js'
+import { raycasterCollision, models, floor } from './scene3d.js'
+import { walls } from './pathsTo3d.js'
+import { getCoolerParticleSystems } from './coolerParticles.js'
 
 let particleSystems = []
 
@@ -116,59 +117,131 @@ export function updateRackParticles() {
       // velocities[i + 1] += (Math.random() - 0.5) * 0.001
       // velocities[i + 2] += (Math.random() - 0.5) * 0.001 // it expands along z-axis orthogonal to main direction x
 
-      /**
-       * TODO: introduce proper collision behaviour
-       *  */ 
-      // // Check for collisions
-      // const particlePosition = new THREE.Vector3(
-      //   positions[i],
-      //   positions[i + 1],
-      //   positions[i + 2]
-      // )
+       // Check for collisions
+       const particlePosition = new THREE.Vector3(
+         positions[i],
+         positions[i + 1],
+         positions[i + 2]
+       )
 
-      // // Convert particle position from local rack space to world space
-      // const worldPosition = particlePosition.clone()
-      // particleData.rack.localToWorld(worldPosition)
+       // Convert particle position from local rack space to world space
+       const worldPosition = particlePosition.clone()
+       particleData.rack.localToWorld(worldPosition)
 
-      // // Set up raycaster from particle position
-      // const rayDirection = new THREE.Vector3(
-      //   velocities[i],
-      //   velocities[i + 1],
-      //   velocities[i + 2]
-      // ).normalize()
+       // Set up raycaster from particle position
+       const rayDirection = new THREE.Vector3(
+         velocities[i],
+         velocities[i + 1],
+         velocities[i + 2]
+       ).normalize()
 
-      // raycasterCollision.set(worldPosition, rayDirection)
+       raycasterCollision.set(worldPosition, rayDirection)
 
-      // // Get all objects except the rack itself and particles
-      // const filteredObjects = models.filter(
-      //   (obj) => obj !== particleData.rack
-      // )
-      // const objectsToTest = [...filteredObjects, floor, ...walls]
+       // Get all objects except the rack itself and particles
+       const filteredObjects = models.filter(
+         (obj) => obj !== particleData.rack
+       )
+       const objectsToTest = [...filteredObjects, floor, ...walls]
 
-      // const intersects = raycasterCollision.intersectObjects(
-      //   objectsToTest,
-      //   true
-      // )
+       const intersects = raycasterCollision.intersectObjects(
+         objectsToTest,
+         true
+       )
 
-      // // Check if collision is close enough (within particle size)
-      // if (intersects.length > 0 && intersects[0].distance < 0.1) {
-      //   // Change particle color on collision
-      //   colors[i] = 1.0 // Red
-      //   colors[i + 1] = 0.5 // Orange-ish
-      //   colors[i + 2] = 0.0 // Blue = 0
+       // Check if collision is close enough (within particle size)
+       if (intersects.length > 0 && intersects[0].distance < 0.1) {
+         // Change particle color on collision
+         colors[i] = 1.0 // Red
+         colors[i + 1] = 0.5 // Orange-ish
+         colors[i + 2] = 0.0 // Blue = 0
 
-      //   // Optional: bounce the particle or reset its velocity
-      //   velocities[i] *= 0
-      //   velocities[i + 1] *= 0
-      //   velocities[i + 2] *= 0
-      // }
-    }
+         // Stop the particle completely on wall collision
+         velocities[i] = 0
+         velocities[i + 1] = 0
+         velocities[i + 2] = 0
 
-    geometry.attributes.color.needsUpdate = true
-    geometry.attributes.position.needsUpdate = true
-    geometry.attributes.lifetime.needsUpdate = true
-  })
-}
+         // Reset particle after a short delay to prevent accumulation
+         setTimeout(() => {
+           initRackParticleProps(
+             particleIndex,
+             positions,
+             velocities,
+             lifetimes,
+             maxLifetime,
+             colors
+           )
+         }, 1000) // Reset after 1 second
+       }
+     }
+
+     // Check for collisions with cooler particles (blue particles)
+     const coolerSystems = getCoolerParticleSystems()
+     coolerSystems.forEach((coolerData) => {
+       const coolerPositions = coolerData.geometry.attributes.position.array
+       const coolerColors = coolerData.geometry.attributes.color.array
+       const coolerVelocities = coolerData.geometry.attributes.velocity.array
+       const coolerLifetimes = coolerData.geometry.attributes.lifetime.array
+       const coolerMaxLifetime = coolerData.geometry.attributes.maxLifetime.array
+
+       for (let j = 0; j < coolerPositions.length; j += 3) {
+         const coolerParticleIndex = j / 3
+
+         // Convert cooler particle position to world space
+         const coolerParticlePosition = new THREE.Vector3(
+           coolerPositions[j],
+           coolerPositions[j + 1],
+           coolerPositions[j + 2]
+         )
+         const coolerWorldPosition = coolerParticlePosition.clone()
+         coolerData.cooler.localToWorld(coolerWorldPosition)
+
+         // Calculate distance between rack and cooler particles
+         const distance = worldPosition.distanceTo(coolerWorldPosition)
+
+         // Check if particles are close enough to collide (within particle size)
+         if (distance < 0.15) {
+           // Blue particle (cooler) disappears immediately
+           initCoolerParticleProps(
+             coolerParticleIndex,
+             coolerPositions,
+             coolerVelocities,
+             coolerLifetimes,
+             coolerMaxLifetime,
+             coolerColors
+           )
+
+           // Red particle (rack) turns yellow and disappears after 1 second
+           colors[i] = 1.0     // Red
+           colors[i + 1] = 1.0 // Green (yellow = red + green)
+           colors[i + 2] = 0.0 // Blue
+
+           // Stop the red particle
+           velocities[i] = 0
+           velocities[i + 1] = 0
+           velocities[i + 2] = 0
+
+           // Make red particle disappear after 1 second
+           setTimeout(() => {
+             initRackParticleProps(
+               particleIndex,
+               positions,
+               velocities,
+               lifetimes,
+               maxLifetime,
+               colors
+             )
+           }, 1000) // Disappear after 1 second
+
+           break // Only handle one collision per particle per frame
+         }
+       }
+     })
+
+     geometry.attributes.color.needsUpdate = true
+     geometry.attributes.position.needsUpdate = true
+     geometry.attributes.lifetime.needsUpdate = true
+   })
+ }
 
 export function initRackParticleProps(
   index,
@@ -183,10 +256,11 @@ export function initRackParticleProps(
   positions[index * 3 + 1] = (Math.random() - 0.5) * 2.5    // y offset
   positions[index * 3 + 2] = -((Math.random() - 0.5) + 0.8) // z offset
 
-  // Initialize velocity
-  velocities[index * 3] = (Math.random() - 0.5) * 0.001             // slightly random along x
-  velocities[index * 3 + 1] = (Math.random() - 0.5) * 0.001 + 0.001 // slight upward flow
-  velocities[index * 3 + 2] = -(Math.random() * 0.001 + 0.001)      // slight backwards flow
+  // Initialize velocity with acceleration
+  const accelerationFactor = 2.5 // Increase speed significantly for rack particles
+  velocities[index * 3] = (Math.random() - 0.5) * 0.001 * accelerationFactor             // slightly random along x
+  velocities[index * 3 + 1] = ((Math.random() - 0.5) * 0.001 + 0.001) * accelerationFactor // slight upward flow
+  velocities[index * 3 + 2] = -(Math.random() * 0.001 + 0.001) * accelerationFactor      // slight backwards flow
 
   // Initialize color
   colors[index * 3] = 1.0 // Red
@@ -196,4 +270,8 @@ export function initRackParticleProps(
   // Initialize lifetime
   lifetimes[index] = Math.random() * 1000
   maxLifetime[index] = 1000 + Math.random() * 500
+}
+
+export function getRackParticleSystems() {
+  return particleSystems
 }

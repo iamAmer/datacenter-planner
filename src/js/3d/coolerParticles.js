@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { raycasterCollision, models, floor } from './scene3d.js'
 import { walls } from './pathsTo3d.js'
+import { getRackParticleSystems } from './rackParticles.js'
 
 let particleSystems = []
 
@@ -142,25 +143,100 @@ export function updateCoolerParticles() {
         true
       )
 
-      // Check if collision is close enough (within particle size)
-      if (intersects.length > 0 && intersects[0].distance < 0.1) {
-        // Change particle color on collision
-        colors[i] = 1.0 // Red
-        colors[i + 1] = 0.5 // Orange-ish
-        colors[i + 2] = 0.0 // Blue = 0
+       // Check if collision is close enough (within particle size)
+       if (intersects.length > 0 && intersects[0].distance < 0.1) {
+         // Change particle color on collision
+         colors[i] = 1.0 // Red
+         colors[i + 1] = 0.5 // Orange-ish
+         colors[i + 2] = 0.0 // Blue = 0
 
-        // Optional: bounce the particle or reset its velocity
-        velocities[i] *= 0
-        velocities[i + 1] *= 0
-        velocities[i + 2] *= 0
-      }
-    }
+         // Stop the particle completely on wall collision
+         velocities[i] = 0
+         velocities[i + 1] = 0
+         velocities[i + 2] = 0
 
-    geometry.attributes.color.needsUpdate = true
-    geometry.attributes.position.needsUpdate = true
-    geometry.attributes.lifetime.needsUpdate = true
-  })
-}
+         // Reset particle after a short delay to prevent accumulation
+         setTimeout(() => {
+           initCoolerParticleProps(
+             particleIndex,
+             positions,
+             velocities,
+             lifetimes,
+             maxLifetime,
+             colors
+           )
+         }, 1000) // Reset after 1 second
+       }
+     }
+
+     // Check for collisions with rack particles (red particles)
+     const rackSystems = getRackParticleSystems()
+     rackSystems.forEach((rackData) => {
+       const rackPositions = rackData.geometry.attributes.position.array
+       const rackColors = rackData.geometry.attributes.color.array
+       const rackVelocities = rackData.geometry.attributes.velocity.array
+       const rackLifetimes = rackData.geometry.attributes.lifetime.array
+       const rackMaxLifetime = rackData.geometry.attributes.maxLifetime.array
+
+       for (let j = 0; j < rackPositions.length; j += 3) {
+         const rackParticleIndex = j / 3
+
+         // Convert rack particle position to world space
+         const rackParticlePosition = new THREE.Vector3(
+           rackPositions[j],
+           rackPositions[j + 1],
+           rackPositions[j + 2]
+         )
+         const rackWorldPosition = rackParticlePosition.clone()
+         rackData.rack.localToWorld(rackWorldPosition)
+
+         // Calculate distance between cooler and rack particles
+         const distance = worldPosition.distanceTo(rackWorldPosition)
+
+         // Check if particles are close enough to collide (within particle size)
+         if (distance < 0.15) {
+           // Blue particle (cooler) disappears immediately
+           initCoolerParticleProps(
+             particleIndex,
+             positions,
+             velocities,
+             lifetimes,
+             maxLifetime,
+             colors
+           )
+
+           // Red particle (rack) turns yellow and disappears after 1 second
+           rackColors[j] = 1.0     // Red
+           rackColors[j + 1] = 1.0 // Green (yellow = red + green)
+           rackColors[j + 2] = 0.0 // Blue
+
+           // Stop the red particle
+           rackVelocities[j] = 0
+           rackVelocities[j + 1] = 0
+           rackVelocities[j + 2] = 0
+
+           // Make red particle disappear after 1 second
+           setTimeout(() => {
+             initRackParticleProps(
+               rackParticleIndex,
+               rackPositions,
+               rackVelocities,
+               rackLifetimes,
+               rackMaxLifetime,
+               rackColors
+             )
+           }, 1000) // Disappear after 1 second
+
+           break // Only handle one collision per particle per frame
+         }
+       }
+     })
+
+     geometry.attributes.color.needsUpdate = true
+     geometry.attributes.position.needsUpdate = true
+     geometry.attributes.lifetime.needsUpdate = true
+   })
+ }
 
 export function initCoolerParticleProps(
   index,
@@ -175,10 +251,11 @@ export function initCoolerParticleProps(
   positions[index * 3 + 1] = ((Math.random() - 0.5) * 0.2) + 20 // y offset
   positions[index * 3 + 2] = (Math.random() - 0.5) * 40 // z offset
 
-  // Initialize velocity
-  velocities[index * 3] = Math.random() * 1 // main flow direction (along X-axis)
-  velocities[index * 3 + 1] = -(Math.random() * 0.1 + 0.1) // slight downward flow
-  velocities[index * 3 + 2] = (Math.random() - 0.5) * 0.02 // slight z variation
+  // Initialize velocity with acceleration
+  const accelerationFactor = 1.8 // Increase speed by 80%
+  velocities[index * 3] = Math.random() * 1 * accelerationFactor // main flow direction (along X-axis)
+  velocities[index * 3 + 1] = -(Math.random() * 0.1 + 0.1) * accelerationFactor // slight downward flow
+  velocities[index * 3 + 2] = (Math.random() - 0.5) * 0.02 * accelerationFactor // slight z variation
 
   // Initialize color
   colors[index * 3] = 0.1 // Red
@@ -188,4 +265,8 @@ export function initCoolerParticleProps(
   // Initialize lifetime
   lifetimes[index] = Math.random() * 1000
   maxLifetime[index] = 1000 + Math.random() * 500
+}
+
+export function getCoolerParticleSystems() {
+  return particleSystems
 }
