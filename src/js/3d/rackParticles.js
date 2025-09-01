@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import { raycasterCollision, models, floor } from './scene3d.js'
 import { walls } from './pathsTo3d.js'
-import { getCoolerParticleSystems } from './coolerParticles.js'
 
 let particleSystems = []
 
@@ -174,68 +173,8 @@ export function updateRackParticles() {
        }
      }
 
-     // Check for collisions with cooler particles (blue particles)
-     const coolerSystems = getCoolerParticleSystems()
-     coolerSystems.forEach((coolerData) => {
-       const coolerPositions = coolerData.geometry.attributes.position.array
-       const coolerColors = coolerData.geometry.attributes.color.array
-       const coolerVelocities = coolerData.geometry.attributes.velocity.array
-       const coolerLifetimes = coolerData.geometry.attributes.lifetime.array
-       const coolerMaxLifetime = coolerData.geometry.attributes.maxLifetime.array
-
-       for (let j = 0; j < coolerPositions.length; j += 3) {
-         const coolerParticleIndex = j / 3
-
-         // Convert cooler particle position to world space
-         const coolerParticlePosition = new THREE.Vector3(
-           coolerPositions[j],
-           coolerPositions[j + 1],
-           coolerPositions[j + 2]
-         )
-         const coolerWorldPosition = coolerParticlePosition.clone()
-         coolerData.cooler.localToWorld(coolerWorldPosition)
-
-         // Calculate distance between rack and cooler particles
-         const distance = worldPosition.distanceTo(coolerWorldPosition)
-
-         // Check if particles are close enough to collide (within particle size)
-         if (distance < 0.15) {
-           // Blue particle (cooler) disappears immediately
-           initCoolerParticleProps(
-             coolerParticleIndex,
-             coolerPositions,
-             coolerVelocities,
-             coolerLifetimes,
-             coolerMaxLifetime,
-             coolerColors
-           )
-
-           // Red particle (rack) turns yellow and disappears after 1 second
-           colors[i] = 1.0     // Red
-           colors[i + 1] = 1.0 // Green (yellow = red + green)
-           colors[i + 2] = 0.0 // Blue
-
-           // Stop the red particle
-           velocities[i] = 0
-           velocities[i + 1] = 0
-           velocities[i + 2] = 0
-
-           // Make red particle disappear after 1 second
-           setTimeout(() => {
-             initRackParticleProps(
-               particleIndex,
-               positions,
-               velocities,
-               lifetimes,
-               maxLifetime,
-               colors
-             )
-           }, 1000) // Disappear after 1 second
-
-           break // Only handle one collision per particle per frame
-         }
-       }
-     })
+      // TODO: Inter-particle collision with cooler particles (removed due to circular dependency)
+      // This functionality can be re-implemented with a different architecture
 
      geometry.attributes.color.needsUpdate = true
      geometry.attributes.position.needsUpdate = true
@@ -272,6 +211,3 @@ export function initRackParticleProps(
   maxLifetime[index] = 1000 + Math.random() * 500
 }
 
-export function getRackParticleSystems() {
-  return particleSystems
-}
