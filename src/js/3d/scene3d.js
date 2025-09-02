@@ -4,6 +4,7 @@ import { TransformControls } from 'three/addons/controls/TransformControls.js'
 import { updateCoolerParticles } from './coolerParticles.js'
 import { updateRackParticles } from './rackParticles.js'
 import { addObjectToScene, deleteObject } from './3dObjects.js'
+import { checkInterParticleCollisions } from './particleCollisions.js'
 
 const canvas3D = document.getElementById('canvas3D')
 
@@ -91,6 +92,7 @@ function animate() {
   requestAnimationFrame(animate)
   updateCoolerParticles()
   updateRackParticles()
+  checkInterParticleCollisions()
   render()
 }
 

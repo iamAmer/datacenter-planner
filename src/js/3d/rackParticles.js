@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { raycasterCollision, models, floor } from './scene3d.js'
 import { walls } from './pathsTo3d.js'
 
-let particleSystems = []
+export let particleSystems = []
 
 export function createRackParticles(rackObject) {
   const particleCount = 100
