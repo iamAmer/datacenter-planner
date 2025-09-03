@@ -1,10 +1,12 @@
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import paper from 'paper'
 import { createGrid } from './2d/floor2d.js'
+import { setupDxfUpload } from './2d/dxfLoader.js'
 import { init3D, camera, renderer } from './3d/scene3d.js'
 import { convertPathsTo3D } from './3d/pathsTo3d.js'
 
 createGrid()
+setupDxfUpload()
 init3D()
 
 // Switch between 2D and 3D modes
