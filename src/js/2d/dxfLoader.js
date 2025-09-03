@@ -12,13 +12,23 @@ export function loadDxfFile(file) {
         const entities = parseDxfManually(dxfContent)
         console.log('Parsed entities:', entities)
 
+        // Calculate bounds and scale entities to fit canvas
+        const bounds = calculateEntitiesBounds(entities)
+        const scale = calculateScaleToFit(bounds)
+        const offset = calculateOffsetToCenter(bounds, scale)
+
+        console.log('DXF bounds:', bounds)
+        console.log('Scale factor:', scale)
+        console.log('Offset:', offset)
+
         // Clear existing content
         paper.project.clear()
+        dxfCircles.length = 0 // Clear previous circles
 
-        // Process entities
+        // Process entities with scaling and positioning
         entities.forEach((entity, index) => {
           console.log(`Processing entity ${index}:`, entity)
-          processDxfEntity(entity)
+          processDxfEntity(entity, scale, offset)
         })
 
         resolve({ entities })
@@ -125,26 +135,88 @@ function parseCircleEntity(lines, startIndex) {
   return null
 }
 
-function processDxfEntity(entity) {
+function processDxfEntity(entity, scale = 1, offset = { x: 0, y: 0 }) {
   console.log('Processing entity:', entity)
   switch (entity.type) {
     case 'LINE':
-      createLineFromDxf(entity)
+      createLineFromDxf(entity, scale, offset)
       break
     case 'CIRCLE':
-      createCircleFromDxf(entity)
+      createCircleFromDxf(entity, scale, offset)
       break
     default:
       console.log('Unsupported entity type:', entity.type)
   }
 }
 
-function createLineFromDxf(entity) {
+function calculateEntitiesBounds(entities) {
+  if (entities.length === 0) return { minX: 0, minY: 0, maxX: 100, maxY: 100 }
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+
+  entities.forEach(entity => {
+    if (entity.type === 'LINE') {
+      minX = Math.min(minX, entity.start.x, entity.end.x)
+      minY = Math.min(minY, entity.start.y, entity.end.y)
+      maxX = Math.max(maxX, entity.start.x, entity.end.x)
+      maxY = Math.max(maxY, entity.start.y, entity.end.y)
+    } else if (entity.type === 'CIRCLE') {
+      const left = entity.center.x - entity.radius
+      const right = entity.center.x + entity.radius
+      const top = entity.center.y - entity.radius
+      const bottom = entity.center.y + entity.radius
+
+      minX = Math.min(minX, left)
+      minY = Math.min(minY, top)
+      maxX = Math.max(maxX, right)
+      maxY = Math.max(maxY, bottom)
+    }
+  })
+
+  return { minX, minY, maxX, maxY }
+}
+
+function calculateScaleToFit(bounds) {
+  const canvasWidth = paper.view.size.width
+  const canvasHeight = paper.view.size.height
+  const padding = 50 // pixels of padding around the content
+
+  const contentWidth = bounds.maxX - bounds.minX
+  const contentHeight = bounds.maxY - bounds.minY
+
+  if (contentWidth === 0 || contentHeight === 0) return 1
+
+  const scaleX = (canvasWidth - padding * 2) / contentWidth
+  const scaleY = (canvasHeight - padding * 2) / contentHeight
+
+  return Math.min(scaleX, scaleY)
+}
+
+function calculateOffsetToCenter(bounds, scale) {
+  const canvasWidth = paper.view.size.width
+  const canvasHeight = paper.view.size.height
+
+  const scaledWidth = (bounds.maxX - bounds.minX) * scale
+  const scaledHeight = (bounds.maxY - bounds.minY) * scale
+
+  const offsetX = (canvasWidth - scaledWidth) / 2 - bounds.minX * scale
+  const offsetY = (canvasHeight - scaledHeight) / 2 - bounds.minY * scale
+
+  return { x: offsetX, y: offsetY }
+}
+
+function createLineFromDxf(entity, scale, offset) {
   console.log('Creating line from:', entity)
 
   if (entity.start && entity.end) {
-    const start = new paper.Point(entity.start.x, entity.start.y)
-    const end = new paper.Point(entity.end.x, entity.end.y)
+    const start = new paper.Point(
+      entity.start.x * scale + offset.x,
+      entity.start.y * scale + offset.y
+    )
+    const end = new paper.Point(
+      entity.end.x * scale + offset.x,
+      entity.end.y * scale + offset.y
+    )
 
     const path = new paper.Path.Line(start, end)
     path.strokeColor = 'black'
@@ -156,15 +228,32 @@ function createLineFromDxf(entity) {
 
 
 
-function createCircleFromDxf(entity) {
-  console.log('Creating circle from:', entity)
+// Global array to store circle data for 3D conversion
+export const dxfCircles = []
+
+function createCircleFromDxf(entity, scale, offset) {
+  console.log('Creating circle for 3D column:', entity)
 
   if (entity.center && entity.radius) {
-    const center = new paper.Point(entity.center.x, entity.center.y)
-    const circle = new paper.Path.Circle(center, entity.radius)
-    circle.strokeColor = 'black'
+    const centerX = entity.center.x * scale + offset.x
+    const centerY = entity.center.y * scale + offset.y
+    const scaledRadius = entity.radius * scale
+
+    // Store circle data for 3D conversion
+    dxfCircles.push({
+      center: new paper.Point(centerX, centerY),
+      radius: scaledRadius,
+      originalCenter: entity.center,
+      originalRadius: entity.radius
+    })
+
+    // Display as circle in 2D view
+    const circle = new paper.Path.Circle(new paper.Point(centerX, centerY), scaledRadius)
+    circle.strokeColor = 'red'  // Different color to indicate it's a 3D column
     circle.strokeWidth = 2
     circle.fillColor = null
+
+    console.log(`Created circle for 3D column at (${centerX}, ${centerY}) with radius ${scaledRadius}`)
   } else {
     console.log('Invalid circle data:', entity)
   }
