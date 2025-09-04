@@ -143,7 +143,7 @@ export function updateRackParticles() {
         velocities[i + 1] = 0
         velocities[i + 2] = 0
 
-        //  maxLifetime[particleIndex] /= 2 // Short lifetime
+        maxLifetime[particleIndex] *= 0.9 // Reduce maxLifetime to avoid accumulation
       }
     }
 
