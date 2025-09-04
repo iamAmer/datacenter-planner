@@ -8,7 +8,7 @@ export let particleSystems = []
 // increases by 50% towards the floor due to gravity and lower temperature
 // along z on the plane parrallel to the floor is constant
 const accelerations = [0.5, 1.5, 1]
- 
+
 export function createCoolerParticles(coolerObject) {
   const particleCount = 500
   const particlesGeometry = new THREE.BufferGeometry()
@@ -129,31 +129,31 @@ export function updateCoolerParticles() {
 
       const intersects = raycasterCollision.intersectObjects(
         objectsToTest,
-        false  // do not check descendants
+        false // do not check descendants
       )
 
-       // Check if collision is close enough (within particle size)
-       if (intersects.length > 0 && intersects[0].distance < 0.1) {
-         // Change particle color on collision
-         colors[i] = 1.0 // Red
-         colors[i + 1] = 0.5 // Orange-ish
-         colors[i + 2] = 0.0 // Blue = 0
+      // Check if collision is close enough (within particle size)
+      if (intersects.length > 0 && intersects[0].distance < 0.1) {
+        // Change particle color on collision
+        colors[i] = 1.0 // Red
+        colors[i + 1] = 0.5 // Orange-ish
+        colors[i + 2] = 0.0 // Blue = 0
 
-         // Stop the particle completely on wall collision
-         velocities[i] = 0
-         velocities[i + 1] = 0
-         velocities[i + 2] = 0
-       }
-     }
+        // Stop the particle completely on wall collision
+        velocities[i] = 0
+        velocities[i + 1] = 0
+        velocities[i + 2] = 0
+      }
+    }
 
-      // TODO: Inter-particle collision with rack particles (removed due to circular dependency)
-      // This functionality can be re-implemented with a different architecture
+    // TODO: Inter-particle collision with rack particles (removed due to circular dependency)
+    // This functionality can be re-implemented with a different architecture
 
-     geometry.attributes.color.needsUpdate = true
-     geometry.attributes.position.needsUpdate = true
-     geometry.attributes.lifetime.needsUpdate = true
-   })
- }
+    geometry.attributes.color.needsUpdate = true
+    geometry.attributes.position.needsUpdate = true
+    geometry.attributes.lifetime.needsUpdate = true
+  })
+}
 
 export function initCoolerParticleProps(
   index,
@@ -165,7 +165,7 @@ export function initCoolerParticleProps(
 ) {
   // Initialize position
   positions[index * 3] = 0 // x no offset
-  positions[index * 3 + 1] = ((Math.random() - 0.5) * 0.2) + 20 // y offset
+  positions[index * 3 + 1] = (Math.random() - 0.5) * 0.2 + 20 // y offset
   positions[index * 3 + 2] = (Math.random() - 0.5) * 40 // z offset
 
   // Initial velocities

@@ -88,7 +88,7 @@ export function updateRackParticles() {
           velocities,
           lifetimes,
           maxLifetime,
-          colors,
+          colors
         )
       }
 
@@ -102,61 +102,59 @@ export function updateRackParticles() {
       // velocities[i + 1] += (Math.random() - 0.5) * 0.0001
       // velocities[i + 2] += (Math.random() - 0.5) * 0.0001 // it expands along z-axis orthogonal to main direction x
 
-       // Check for collisions
-       const particlePosition = new THREE.Vector3(
-         positions[i],
-         positions[i + 1],
-         positions[i + 2]
-       )
+      // Check for collisions
+      const particlePosition = new THREE.Vector3(
+        positions[i],
+        positions[i + 1],
+        positions[i + 2]
+      )
 
-       // Convert particle position from local rack space to world space
-       const worldPosition = particlePosition.clone()
-       particleData.rack.localToWorld(worldPosition)
+      // Convert particle position from local rack space to world space
+      const worldPosition = particlePosition.clone()
+      particleData.rack.localToWorld(worldPosition)
 
-       // Set up raycaster from particle position
-       const rayDirection = new THREE.Vector3(
-         velocities[i],
-         velocities[i + 1],
-         velocities[i + 2]
-       ).normalize()
+      // Set up raycaster from particle position
+      const rayDirection = new THREE.Vector3(
+        velocities[i],
+        velocities[i + 1],
+        velocities[i + 2]
+      ).normalize()
 
-       raycasterCollision.set(worldPosition, rayDirection)
+      raycasterCollision.set(worldPosition, rayDirection)
 
-       // Get all objects except the rack itself and particles
-       const filteredObjects = models.filter(
-         (obj) => obj !== particleData.rack
-       )
-       const objectsToTest = [...filteredObjects, floor, ...walls]
+      // Get all objects except the rack itself and particles
+      const filteredObjects = models.filter((obj) => obj !== particleData.rack)
+      const objectsToTest = [...filteredObjects, floor, ...walls]
 
-       const intersects = raycasterCollision.intersectObjects(
-         objectsToTest,
-         false    // do not check descendants
-       )
+      const intersects = raycasterCollision.intersectObjects(
+        objectsToTest,
+        false // do not check descendants
+      )
 
-       // Check if collision is close enough (within particle size)
-       if (intersects.length > 0 && intersects[0].distance < 0.1) {
-         // Change particle color on collision
-         colors[i] = 1.0 // Red
-         colors[i + 1] = 0.5 // Orange-ish
-         colors[i + 2] = 0.0 // Blue = 0
+      // Check if collision is close enough (within particle size)
+      if (intersects.length > 0 && intersects[0].distance < 0.1) {
+        // Change particle color on collision
+        colors[i] = 1.0 // Red
+        colors[i + 1] = 0.5 // Orange-ish
+        colors[i + 2] = 0.0 // Blue = 0
 
-         // Stop the particle completely on wall collision
-         velocities[i] = 0
-         velocities[i + 1] = 0
-         velocities[i + 2] = 0
+        // Stop the particle completely on wall collision
+        velocities[i] = 0
+        velocities[i + 1] = 0
+        velocities[i + 2] = 0
 
         //  maxLifetime[particleIndex] /= 2 // Short lifetime
-       }
-     }
+      }
+    }
 
-      // TODO: Inter-particle collision with cooler particles (removed due to circular dependency)
-      // This functionality can be re-implemented with a different architecture
+    // TODO: Inter-particle collision with cooler particles (removed due to circular dependency)
+    // This functionality can be re-implemented with a different architecture
 
-     geometry.attributes.color.needsUpdate = true
-     geometry.attributes.position.needsUpdate = true
-     geometry.attributes.lifetime.needsUpdate = true
-   })
- }
+    geometry.attributes.color.needsUpdate = true
+    geometry.attributes.position.needsUpdate = true
+    geometry.attributes.lifetime.needsUpdate = true
+  })
+}
 
 export function initRackParticleProps(
   index,
@@ -164,17 +162,17 @@ export function initRackParticleProps(
   velocities,
   lifetimes,
   maxLifetime,
-  colors,
+  colors
 ) {
   // Initial positions
-  positions[index * 3] =  (Math.random() - 0.5) * 0.5       // x initial offset
-  positions[index * 3 + 1] = (Math.random() - 0.5) * 2.5    // y offset
-  positions[index * 3 + 2] = -((Math.random() - 0.5) + 0.8) // z offset
+  positions[index * 3] = (Math.random() - 0.5) * 0.5 // x initial offset
+  positions[index * 3 + 1] = (Math.random() - 0.5) * 2.5 // y offset
+  positions[index * 3 + 2] = -(Math.random() - 0.5 + 0.8) // z offset
 
   // Initial velocities
-  velocities[index * 3] = (Math.random() - 0.5) * 0.002             // slightly random along x
-  velocities[index * 3 + 1] = ((Math.random() - 0.5) * 0.002 + 0.002)  // slight upward flow
-  velocities[index * 3 + 2] = -(Math.random() * 0.02 + 0.001)      // mainly backwards flow due to fans
+  velocities[index * 3] = (Math.random() - 0.5) * 0.002 // slightly random along x
+  velocities[index * 3 + 1] = (Math.random() - 0.5) * 0.002 + 0.002 // slight upward flow
+  velocities[index * 3 + 2] = -(Math.random() * 0.02 + 0.001) // mainly backwards flow due to fans
 
   // Initialize color
   colors[index * 3] = 1.0 // Red
@@ -185,4 +183,3 @@ export function initRackParticleProps(
   lifetimes[index] = Math.random() * 1000
   maxLifetime[index] = 1000 + Math.random() * 500
 }
-
