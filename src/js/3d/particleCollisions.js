@@ -78,16 +78,27 @@ function handleCollision(rackData, rackParticleIndex, coolerData, coolerParticle
   const rackGeometry = rackData.geometry
   const coolerGeometry = coolerData.geometry
 
-  const rackLifetimes = rackGeometry.attributes.lifetime.array
   const rackMaxLifetimes = rackGeometry.attributes.maxLifetime.array
-  const coolerLifetimes = coolerGeometry.attributes.lifetime.array
+  const rackColors = rackGeometry.attributes.color.array
   const coolerMaxLifetimes = coolerGeometry.attributes.maxLifetime.array
+  const coolerColors = coolerGeometry.attributes.color.array
 
-  // Set both particles' lifetime to max so they disappear immediately
-  rackLifetimes[rackParticleIndex] = rackMaxLifetimes[rackParticleIndex]
-  coolerLifetimes[coolerParticleIndex] = coolerMaxLifetimes[coolerParticleIndex]
+  // Rember to multiply indexes by 3 as colors are defined 3 dimensional vectors
+  rackColors[rackParticleIndex * 3] = 1.0   // Red
+  rackColors[rackParticleIndex * 3 + 1] = 0.5  // Yellow
+  rackColors[rackParticleIndex * 3 + 2] = 0.0  // Blue
 
-  rackGeometry.attributes.lifetime.needsUpdate = true
-  coolerGeometry.attributes.lifetime.needsUpdate = true
+  coolerColors[coolerParticleIndex * 3] = 1.0   // Red
+  coolerColors[coolerParticleIndex * 3 + 1] = 0.5  // Yellow
+  coolerColors[coolerParticleIndex * 3 + 2] = 0.0  // Blue
+
+  // Reduce maxLifetimes to avoid accumulation
+  rackMaxLifetimes[rackParticleIndex] *= 0.9 
+  coolerMaxLifetimes[coolerParticleIndex] *= 0.9
+
+  rackGeometry.attributes.maxLifetime.needsUpdate = true
+  coolerGeometry.attributes.maxLifetime.needsUpdate = true
+  rackGeometry.attributes.color.needsUpdate = true
+  coolerGeometry.attributes.color.needsUpdate = true
 }
 

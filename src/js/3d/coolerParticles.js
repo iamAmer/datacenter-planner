@@ -148,12 +148,10 @@ export function updateCoolerParticles() {
       }
     }
 
-    // TODO: Inter-particle collision with rack particles (removed due to circular dependency)
-    // This functionality can be re-implemented with a different architecture
-
     geometry.attributes.color.needsUpdate = true
     geometry.attributes.position.needsUpdate = true
     geometry.attributes.lifetime.needsUpdate = true
+    geometry.attributes.maxLifetime.needsUpdate = true
   })
 }
 
