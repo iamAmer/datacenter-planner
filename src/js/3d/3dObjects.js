@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
 import { createCoolerParticles } from './coolerParticles.js'
+import { createRackParticles } from './rackParticles.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
 export function addObjectToScene(model) {
@@ -33,6 +34,7 @@ export function addObjectToScene(model) {
         aux_mesh_name(object, material_obj, 'rack')
         object.scale.setY(1.1)
         setRackPosition(object)
+        createRackParticles(object)
         break
     }
     scene.add(object)
