@@ -15,34 +15,8 @@ function checkCollisionsBetweenSystems(rackData, coolerData) {
   const rackGeometry = rackData.geometry
   const coolerGeometry = coolerData.geometry
 
-  const rackPositions = rackGeometry.attributes.position.array
-  const coolerPositions = coolerGeometry.attributes.position.array
-
-  // Convert rack positions to world space
-  const rackWorldPositions = []
-  for (let i = 0; i < rackPositions.length; i += 3) {
-    const localPos = new THREE.Vector3(
-      rackPositions[i],
-      rackPositions[i + 1],
-      rackPositions[i + 2]
-    )
-    const worldPos = localPos.clone()
-    rackData.rack.localToWorld(worldPos)
-    rackWorldPositions.push(worldPos)
-  }
-
-  // Convert cooler positions to world space
-  const coolerWorldPositions = []
-  for (let i = 0; i < coolerPositions.length; i += 3) {
-    const localPos = new THREE.Vector3(
-      coolerPositions[i],
-      coolerPositions[i + 1],
-      coolerPositions[i + 2]
-    )
-    const worldPos = localPos.clone()
-    coolerData.cooler.localToWorld(worldPos)
-    coolerWorldPositions.push(worldPos)
-  }
+  const rackWorldPositions = rackGeometry.attributes.worldPosition.array
+  const coolerWorldPositions = coolerGeometry.attributes.worldPosition.array
 
   // Check for collisions between each rack particle and cooler particle
   const collisionDistance = 0.1 // Same as used in individual particle collision detection
@@ -50,20 +24,32 @@ function checkCollisionsBetweenSystems(rackData, coolerData) {
   // Track which rack particles have already collided this frame
   const collidedRackParticles = new Set()
 
-  for (let rackIndex = 0; rackIndex < rackWorldPositions.length; rackIndex++) {
+  for (
+    let rackIndex = 0;
+    rackIndex < rackWorldPositions.length;
+    rackIndex += 3
+  ) {
     // Skip if this rack particle already collided
     if (collidedRackParticles.has(rackIndex)) {
       continue
     }
 
-    const rackPos = rackWorldPositions[rackIndex]
+    const rackPos = new THREE.Vector3(
+      rackWorldPositions[rackIndex],
+      rackWorldPositions[rackIndex + 1],
+      rackWorldPositions[rackIndex + 2]
+    )
 
     for (
       let coolerIndex = 0;
       coolerIndex < coolerWorldPositions.length;
-      coolerIndex++
+      coolerIndex += 3
     ) {
-      const coolerPos = coolerWorldPositions[coolerIndex]
+      const coolerPos = new THREE.Vector3(
+        coolerWorldPositions[coolerIndex],
+        coolerWorldPositions[coolerIndex + 1],
+        coolerWorldPositions[coolerIndex + 2]
+      )
       const distance = rackPos.distanceTo(coolerPos)
 
       if (distance < collisionDistance) {

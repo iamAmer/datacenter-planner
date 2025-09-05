@@ -13,6 +13,7 @@ export function createCoolerParticles(coolerObject) {
   const particleCount = 500
   const particlesGeometry = new THREE.BufferGeometry()
   const positions = new Float32Array(particleCount * 3)
+  const worldPositions = new Float32Array(particleCount * 3)
   const velocities = new Float32Array(particleCount * 3)
   const lifetimes = new Float32Array(particleCount)
   const maxLifetime = new Float32Array(particleCount)
@@ -22,6 +23,7 @@ export function createCoolerParticles(coolerObject) {
     initCoolerParticleProps(
       i,
       positions,
+      worldPositions,
       velocities,
       lifetimes,
       maxLifetime,
@@ -32,6 +34,10 @@ export function createCoolerParticles(coolerObject) {
   particlesGeometry.setAttribute(
     'position',
     new THREE.BufferAttribute(positions, 3)
+  )
+  particlesGeometry.setAttribute(
+    'worldPosition',
+    new THREE.BufferAttribute(worldPositions, 3)
   )
   particlesGeometry.setAttribute(
     'velocity',
@@ -69,6 +75,7 @@ export function updateCoolerParticles() {
   particleSystems.forEach((particleData) => {
     const geometry = particleData.geometry
     const positions = geometry.attributes.position.array
+    const worldPositions = geometry.attributes.worldPosition.array
     const velocities = geometry.attributes.velocity.array
     const lifetimes = geometry.attributes.lifetime.array
     const maxLifetime = geometry.attributes.maxLifetime.array
@@ -84,6 +91,7 @@ export function updateCoolerParticles() {
         initCoolerParticleProps(
           particleIndex,
           positions,
+          worldPositions,
           velocities,
           lifetimes,
           maxLifetime,
@@ -111,6 +119,11 @@ export function updateCoolerParticles() {
       // Convert particle position from local cooler space to world space
       const worldPosition = particlePosition.clone()
       particleData.cooler.localToWorld(worldPosition)
+
+      // Store current world positions for other uses
+      worldPositions[i] = worldPosition['x']
+      worldPositions[i + 1] = worldPosition['y']
+      worldPositions[i + 2] = worldPosition['z']
 
       // Set up raycaster from particle position
       const rayDirection = new THREE.Vector3(
@@ -150,6 +163,7 @@ export function updateCoolerParticles() {
 
     geometry.attributes.color.needsUpdate = true
     geometry.attributes.position.needsUpdate = true
+    geometry.attributes.worldPosition.needsUpdate = true
     geometry.attributes.lifetime.needsUpdate = true
     geometry.attributes.maxLifetime.needsUpdate = true
   })
@@ -158,6 +172,7 @@ export function updateCoolerParticles() {
 export function initCoolerParticleProps(
   index,
   positions,
+  worldPositions,
   velocities,
   lifetimes,
   maxLifetime,
@@ -167,6 +182,10 @@ export function initCoolerParticleProps(
   positions[index * 3] = 0 // x no offset
   positions[index * 3 + 1] = (Math.random() - 0.5) * 0.2 + 20 // y offset
   positions[index * 3 + 2] = (Math.random() - 0.5) * 40 // z offset
+
+  worldPositions[index * 3] = 0
+  worldPositions[index * 3 + 1] = 0
+  worldPositions[index * 3 + 2] = 0 // initialy set world position to 0
 
   // Initial velocities
   velocities[index * 3] = Math.random() * 2 // main flow direction (along X-axis)
