@@ -134,11 +134,15 @@ export function updateCoolerParticles() {
 
       raycasterCollision.set(worldPosition, rayDirection)
 
-      // Get all objects except the cooler itself and particles
+      // Get all objects except the cooler itself
       const filteredObjects = models.filter(
         (obj) => obj !== particleData.cooler
       )
-      const objectsToTest = [...filteredObjects, floor, ...walls]
+      // Take only the object itself without its particles if present
+      const filteredObjectsMeshes = filteredObjects.map((obj) =>
+        obj.getObjectByProperty('type', 'Mesh')
+      )
+      const objectsToTest = [...filteredObjectsMeshes, floor, ...walls]
 
       const intersects = raycasterCollision.intersectObjects(
         objectsToTest,
