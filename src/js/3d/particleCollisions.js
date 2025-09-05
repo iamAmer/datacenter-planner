@@ -79,17 +79,17 @@ function handleCollision(
   const coolerColors = coolerGeometry.attributes.color.array
 
   // Rember to multiply indexes by 3 as colors are defined 3 dimensional vectors
-  rackColors[rackParticleIndex * 3] = 1.0 // Red
-  rackColors[rackParticleIndex * 3 + 1] = 0.5 // Yellow
-  rackColors[rackParticleIndex * 3 + 2] = 0.0 // Blue
+  rackColors[rackParticleIndex] = 1.0 // Red
+  rackColors[rackParticleIndex + 1] = 0.5 // Yellow
+  rackColors[rackParticleIndex + 2] = 0.0 // Blue
 
-  coolerColors[coolerParticleIndex * 3] = 1.0 // Red
-  coolerColors[coolerParticleIndex * 3 + 1] = 0.5 // Yellow
-  coolerColors[coolerParticleIndex * 3 + 2] = 0.0 // Blue
+  coolerColors[coolerParticleIndex] = 1.0 // Red
+  coolerColors[coolerParticleIndex + 1] = 0.5 // Yellow
+  coolerColors[coolerParticleIndex + 2] = 0.0 // Blue
 
   // Reduce maxLifetimes to avoid accumulation
-  rackMaxLifetimes[rackParticleIndex] *= 0.9
-  coolerMaxLifetimes[coolerParticleIndex] *= 0.9
+  rackMaxLifetimes[rackParticleIndex / 3] *= 0.9
+  coolerMaxLifetimes[coolerParticleIndex / 3] *= 0.9
 
   rackGeometry.attributes.maxLifetime.needsUpdate = true
   coolerGeometry.attributes.maxLifetime.needsUpdate = true
