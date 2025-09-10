@@ -76,6 +76,7 @@ export function init3D() {
   floor = new THREE.Mesh(floorGeometry, floorMaterial)
   floor.rotation.x = -Math.PI / 2
   floor.position.y = 0
+  floor.name = 'floor'
   scene.add(floor)
 
   // Raycaster and mouse initialization

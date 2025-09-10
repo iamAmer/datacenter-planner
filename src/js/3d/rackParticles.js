@@ -6,13 +6,14 @@ export let particleSystems = []
 
 // constant low velocity along x due to small initial velocity
 // velocity increased by 50% at every update along y (hot particles going up)
-// velocity reduced at every update along z (backwards, on the main direction due to friction)
+// velocity reduced at every update along z (backwards on the main direction, due to friction)
 const accelerations = [1, 1.2, 0.3]
 
 export function createRackParticles(rackObject) {
   const particleCount = 250
   const particlesGeometry = new THREE.BufferGeometry()
   const positions = new Float32Array(particleCount * 3)
+  const worldPositions = new Float32Array(particleCount * 3)
   const velocities = new Float32Array(particleCount * 3)
   const lifetimes = new Float32Array(particleCount)
   const maxLifetime = new Float32Array(particleCount)
@@ -22,6 +23,7 @@ export function createRackParticles(rackObject) {
     initRackParticleProps(
       i,
       positions,
+      worldPositions,
       velocities,
       lifetimes,
       maxLifetime,
@@ -32,6 +34,10 @@ export function createRackParticles(rackObject) {
   particlesGeometry.setAttribute(
     'position',
     new THREE.BufferAttribute(positions, 3)
+  )
+  particlesGeometry.setAttribute(
+    'worldPosition',
+    new THREE.BufferAttribute(worldPositions, 3)
   )
   particlesGeometry.setAttribute(
     'velocity',
@@ -70,6 +76,7 @@ export function updateRackParticles() {
   particleSystems.forEach((particleData) => {
     const geometry = particleData.geometry
     const positions = geometry.attributes.position.array
+    const worldPositions = geometry.attributes.worldPosition.array
     const velocities = geometry.attributes.velocity.array
     const lifetimes = geometry.attributes.lifetime.array
     const maxLifetime = geometry.attributes.maxLifetime.array
@@ -85,6 +92,7 @@ export function updateRackParticles() {
         initRackParticleProps(
           particleIndex,
           positions,
+          worldPositions,
           velocities,
           lifetimes,
           maxLifetime,
@@ -113,6 +121,11 @@ export function updateRackParticles() {
       const worldPosition = particlePosition.clone()
       particleData.rack.localToWorld(worldPosition)
 
+      // Store current world positions for other uses
+      worldPositions[i] = worldPosition['x']
+      worldPositions[i + 1] = worldPosition['y']
+      worldPositions[i + 2] = worldPosition['z']
+
       // Set up raycaster from particle position
       const rayDirection = new THREE.Vector3(
         velocities[i],
@@ -122,9 +135,13 @@ export function updateRackParticles() {
 
       raycasterCollision.set(worldPosition, rayDirection)
 
-      // Get all objects except the rack itself and particles
+      // Get all objects except the rack itself
       const filteredObjects = models.filter((obj) => obj !== particleData.rack)
-      const objectsToTest = [...filteredObjects, floor, ...walls]
+      // Take only the object itself without its particles if present
+      const filteredObjectsMeshes = filteredObjects.map((obj) =>
+        obj.getObjectByProperty('type', 'Mesh')
+      )
+      const objectsToTest = [...filteredObjectsMeshes, floor, ...walls]
 
       const intersects = raycasterCollision.intersectObjects(
         objectsToTest,
@@ -149,6 +166,7 @@ export function updateRackParticles() {
 
     geometry.attributes.color.needsUpdate = true
     geometry.attributes.position.needsUpdate = true
+    geometry.attributes.worldPosition.needsUpdate = true
     geometry.attributes.lifetime.needsUpdate = true
     geometry.attributes.maxLifetime.needsUpdate = true
   })
@@ -157,6 +175,7 @@ export function updateRackParticles() {
 export function initRackParticleProps(
   index,
   positions,
+  worldPositions,
   velocities,
   lifetimes,
   maxLifetime,
@@ -166,6 +185,10 @@ export function initRackParticleProps(
   positions[index * 3] = (Math.random() - 0.5) * 0.5 // x initial offset
   positions[index * 3 + 1] = (Math.random() - 0.5) * 2.5 // y offset
   positions[index * 3 + 2] = -(Math.random() - 0.5 + 0.8) // z offset
+
+  worldPositions[index * 3] = 0
+  worldPositions[index * 3 + 1] = 0
+  worldPositions[index * 3 + 2] = 0 // initialy set world position to 0
 
   // Initial velocities
   velocities[index * 3] = (Math.random() - 0.5) * 0.002 // slightly random along x
