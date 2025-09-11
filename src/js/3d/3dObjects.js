@@ -8,7 +8,7 @@ import {
   createRackParticles,
   particleSystems as rackParticleSystems,
 } from './rackParticles.js'
-import { addRectangle, addAttractionToRack } from './rectangles.js'
+import { addRectangle, addAttractorToRack } from './rectangles.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
 export function addObjectToScene(model) {
@@ -45,7 +45,7 @@ export function addObjectToScene(model) {
         object.scale.setY(1.1)
         setRackPosition(object)
         createRackParticles(object)
-        // addAttractionToRack(object)
+        addAttractorToRack(object)
         break
     }
     scene.add(object)

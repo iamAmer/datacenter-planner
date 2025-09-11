@@ -2,7 +2,6 @@ import * as THREE from 'three'
 import { scene, models } from './scene3d.js'
 import { particleSystems as coolerParticleSystems } from './coolerParticles.js'
 
-
 // Define the rectangle dimensions and position
 export const rectangleWidth = 1
 export const rectangleHeight = 3
@@ -11,7 +10,6 @@ export const localAttractingNormal = new THREE.Vector3(0, 0, 1) // Points in the
 
 // Create an array to store the rectangles
 export const rectangles = []
-export const normalArrows = []
 
 export function addRectangle() {
   const planeGeometry = new THREE.PlaneGeometry(rectangleWidth, rectangleHeight)
@@ -35,8 +33,29 @@ export function addRectangle() {
     0x00ffff
   ) // Points in the positive z direction (Blue-axis)
   plane.add(normalArrow)
-  normalArrows.push(normalArrow)
   models.push(plane)
+}
+
+export function addAttractorToRack(rackObj) {
+  const planeGeometry = new THREE.PlaneGeometry(rectangleWidth, rectangleHeight)
+  const planeMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffff00,
+    side: THREE.DoubleSide,
+  })
+  const plane = new THREE.Mesh(planeGeometry, planeMaterial)
+
+  rectangles.push(plane)
+
+  // Create an arrow to represent the worldAttractingNormal vector for each rectangle
+  const normalArrow = new THREE.ArrowHelper(
+    new THREE.Vector3(0, 0, 1),
+    new THREE.Vector3(0, 0, 0),
+    1,
+    0x00ffff
+  ) // Points in the positive z direction (Blue-axis)
+  plane.add(normalArrow)
+
+  rackObj.add(plane)
 }
 
 export function rectanglesAttractionOnCoolerParticles() {
@@ -49,7 +68,7 @@ export function rectanglesAttractionOnCoolerParticles() {
   const forceStrength = 0.001
   const minDistance = 0.5
   const maxForce = 0.01
-  const falloffPower = 2 
+  const falloffPower = 2
 
   // Calculate force from each rectangle
   // rectangles.forEach((rectangle, index) => {
@@ -73,11 +92,7 @@ export function rectanglesAttractionOnCoolerParticles() {
           coolerParticlesWorldPositions[particleIndex + 2]
         )
 
-        closestPointOnRectangle(
-          particlePosition,
-          rectangles[n],
-          closestPoint
-        )
+        closestPointOnRectangle(particlePosition, rectangles[n], closestPoint)
 
         // Calculate direction vector
         direction.subVectors(closestPoint, particlePosition)
@@ -86,7 +101,7 @@ export function rectanglesAttractionOnCoolerParticles() {
         // Skip if too far away (optimization)
         if (distance > 10) continue
 
-         // Normalize direction
+        // Normalize direction
         if (distance > 0.001) {
           direction.divideScalar(distance)
         } else {
@@ -107,7 +122,7 @@ export function rectanglesAttractionOnCoolerParticles() {
 
         // Apply force based on which side of the rectangle
         const finalForce = dotProduct < 0 ? forceMagnitude : -forceMagnitude
-        
+
         // Accumulate force
         totalForce.addScaledVector(direction, finalForce)
       }
@@ -127,16 +142,16 @@ function closestPointOnRectangle(point, rectangle, result) {
   // Transform point to rectangle's local space
   const localPoint = point.clone()
   rectangle.worldToLocal(localPoint)
-  
+
   // Now calculate closest point in local space
   const halfWidth = rectangleWidth / 2
   const halfHeight = rectangleHeight / 2
-  
+
   // Clamp to rectangle boundaries
   result.x = Math.max(-halfWidth, Math.min(localPoint.x, halfWidth))
   result.y = Math.max(-halfHeight, Math.min(localPoint.y, halfHeight))
   result.z = 0 // Rectangle is on the XY plane in local space
-  
+
   // Transform back to world space
   rectangle.localToWorld(result)
 }
