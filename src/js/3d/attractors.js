@@ -8,10 +8,10 @@ export const rectangleHeight = 3
 
 export const localAttractingNormal = new THREE.Vector3(0, 0, 1) // Points in the positive z direction (Blue-axis)
 
-// Create an array to store the rectangles
-export const rectangles = []
+// Create an array to store the attractors
+export const attractors = []
 
-export function addRectangle() {
+export function addAttractor() {
   const planeGeometry = new THREE.PlaneGeometry(rectangleWidth, rectangleHeight)
   const planeMaterial = new THREE.MeshBasicMaterial({
     color: 0xffff00,
@@ -23,7 +23,7 @@ export function addRectangle() {
   plane.position.y = rectangleHeight / 2
 
   scene.add(plane)
-  rectangles.push(plane)
+  attractors.push(plane)
 
   // Create an arrow to represent the worldAttractingNormal vector for each rectangle
   const normalArrow = new THREE.ArrowHelper(
@@ -44,7 +44,7 @@ export function addAttractorToRack(rackObj) {
   })
   const plane = new THREE.Mesh(planeGeometry, planeMaterial)
 
-  rectangles.push(plane)
+  attractors.push(plane)
 
   // Create an arrow to represent the worldAttractingNormal vector for each rectangle
   const normalArrow = new THREE.ArrowHelper(
@@ -58,7 +58,7 @@ export function addAttractorToRack(rackObj) {
   rackObj.add(plane)
 }
 
-export function rectanglesAttractionOnCoolerParticles() {
+export function attractCoolerParticles() {
   // Pre-allocate vectors to avoid creating new ones in the loop
   const particlePosition = new THREE.Vector3()
   const closestPoint = new THREE.Vector3()
@@ -70,8 +70,8 @@ export function rectanglesAttractionOnCoolerParticles() {
   const maxForce = 0.01
   const falloffPower = 2
 
-  // Calculate force from each rectangle
-  // rectangles.forEach((rectangle, index) => {
+  // Calculate force from each attractor
+  // attractors.forEach((attractor, index) => {
   coolerParticleSystems.forEach((coolerData) => {
     const coolerGeometry = coolerData.geometry
     const coolerParticlesWorldPositions =
@@ -85,14 +85,14 @@ export function rectanglesAttractionOnCoolerParticles() {
     ) {
       totalForce.set(0, 0, 0) // Reset total force for each particle
 
-      for (let n = 0; n < rectangles.length; n++) {
+      for (let n = 0; n < attractors.length; n++) {
         particlePosition.set(
           coolerParticlesWorldPositions[particleIndex],
           coolerParticlesWorldPositions[particleIndex + 1],
           coolerParticlesWorldPositions[particleIndex + 2]
         )
 
-        closestPointOnRectangle(particlePosition, rectangles[n], closestPoint)
+        closestPointOnRectangle(particlePosition, attractors[n], closestPoint)
 
         // Calculate direction vector
         direction.subVectors(closestPoint, particlePosition)
@@ -117,10 +117,10 @@ export function rectanglesAttractionOnCoolerParticles() {
 
         // Determine attraction/repulsion based on normal
         const worldAttractingNormal = localAttractingNormal.clone()
-        worldAttractingNormal.applyQuaternion(rectangles[n].quaternion)
+        worldAttractingNormal.applyQuaternion(attractors[n].quaternion)
         const dotProduct = direction.dot(worldAttractingNormal)
 
-        // Apply force based on which side of the rectangle
+        // Apply force based on which side of the attractor
         const finalForce = dotProduct < 0 ? forceMagnitude : -forceMagnitude
 
         // Accumulate force

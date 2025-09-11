@@ -5,7 +5,7 @@ import { updateCoolerParticles } from './coolerParticles.js'
 import { updateRackParticles } from './rackParticles.js'
 import { addObjectToScene, deleteObject } from './3dObjects.js'
 import { checkInterParticleCollisions } from './particleCollisions.js'
-import { rectanglesAttractionOnCoolerParticles } from './rectangles.js'
+import { attractCoolerParticles } from './attractors.js'
 
 const canvas3D = document.getElementById('canvas3D')
 
@@ -95,7 +95,7 @@ function animate() {
   updateCoolerParticles()
   updateRackParticles()
   checkInterParticleCollisions()
-  rectanglesAttractionOnCoolerParticles()
+  attractCoolerParticles()
   render()
 }
 

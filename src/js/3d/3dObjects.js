@@ -8,12 +8,12 @@ import {
   createRackParticles,
   particleSystems as rackParticleSystems,
 } from './rackParticles.js'
-import { addRectangle, addAttractorToRack } from './rectangles.js'
+import { addAttractor, addAttractorToRack } from './attractors.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
 export function addObjectToScene(model) {
-  if (model === 'Rectangle') {
-    addRectangle()
+  if (model === 'Attractor') {
+    addAttractor()
     return
   }
   // Use a material that responds to light
