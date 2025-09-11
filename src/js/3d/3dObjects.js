@@ -1,8 +1,14 @@
 import * as THREE from 'three'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
-import { createCoolerParticles } from './coolerParticles.js'
-import { createRackParticles } from './rackParticles.js'
-import { addRectangle } from './rectangles.js'
+import {
+  createCoolerParticles,
+  particleSystems as coolerParticleSystems,
+} from './coolerParticles.js'
+import {
+  createRackParticles,
+  particleSystems as rackParticleSystems,
+} from './rackParticles.js'
+import { addRectangle, addAttractionToRack } from './rectangles.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
 export function addObjectToScene(model) {
@@ -39,6 +45,7 @@ export function addObjectToScene(model) {
         object.scale.setY(1.1)
         setRackPosition(object)
         createRackParticles(object)
+        // addAttractionToRack(object)
         break
     }
     scene.add(object)
@@ -62,12 +69,12 @@ function aux_mesh_name(object, material, name) {
 
 export function deleteObject() {
   const intersects = raycasterMouse.intersectObjects(models, true)
-  console.log(intersects[0].object)
 
   // Check if there are any intersected objects
   if (intersects.length > 0) {
     // Get the parent object that was added to the models array
     let draggableObject = intersects[0].object
+    console.log(draggableObject)
 
     // Traverse up the hierarchy to find the root parent that was added to models
     while (draggableObject.parent && !models.includes(draggableObject)) {
@@ -83,6 +90,26 @@ export function deleteObject() {
       const index = models.indexOf(draggableObject)
       if (index > -1) {
         models.splice(index, 1)
+      }
+
+      // If the object is a cooler, remove also the associated particle system
+      if (draggableObject?.name === 'cooler') {
+        const coolerParticleSystemIndex = coolerParticleSystems.findIndex(
+          (ps) => ps.cooler === draggableObject
+        )
+        if (coolerParticleSystemIndex > -1) {
+          coolerParticleSystems.splice(coolerParticleSystemIndex, 1)
+        }
+      }
+
+      // If the object is a rack, remove also the associated particle system
+      if (draggableObject?.name === 'rack') {
+        const rackParticleSystemIndex = rackParticleSystems.findIndex(
+          (ps) => ps.rack === draggableObject
+        )
+        if (rackParticleSystemIndex > -1) {
+          rackParticleSystems.splice(rackParticleSystemIndex, 1)
+        }
       }
 
       // Detach transform controls and reset the draggableObject variable
