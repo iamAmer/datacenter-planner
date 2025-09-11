@@ -18,12 +18,16 @@ export function addAttractor() {
     side: THREE.DoubleSide,
   })
   const plane = new THREE.Mesh(planeGeometry, planeMaterial)
+  plane.name = 'attractor'
 
   // Position the rectangle so its lower edge is at y=0
   plane.position.y = rectangleHeight / 2
 
   scene.add(plane)
-  attractors.push(plane)
+  attractors.push({
+    mesh: plane,
+    parent: null,
+  })
 
   // Create an arrow to represent the worldAttractingNormal vector for each rectangle
   const normalArrow = new THREE.ArrowHelper(
@@ -44,7 +48,10 @@ export function addAttractorToRack(rackObj) {
   })
   const plane = new THREE.Mesh(planeGeometry, planeMaterial)
 
-  attractors.push(plane)
+  attractors.push({
+    mesh: plane,
+    parent: rackObj,
+  })
 
   // Create an arrow to represent the worldAttractingNormal vector for each rectangle
   const normalArrow = new THREE.ArrowHelper(
@@ -59,6 +66,10 @@ export function addAttractorToRack(rackObj) {
 }
 
 export function attractCoolerParticles() {
+  // If no attractors in the scene return
+  if (attractors.length === 0) {
+    return
+  }
   // Pre-allocate vectors to avoid creating new ones in the loop
   const particlePosition = new THREE.Vector3()
   const closestPoint = new THREE.Vector3()
@@ -92,7 +103,7 @@ export function attractCoolerParticles() {
           coolerParticlesWorldPositions[particleIndex + 2]
         )
 
-        closestPointOnRectangle(particlePosition, attractors[n], closestPoint)
+        closestPointOnRectangle(particlePosition, attractors[n].mesh, closestPoint)
 
         // Calculate direction vector
         direction.subVectors(closestPoint, particlePosition)
@@ -117,7 +128,7 @@ export function attractCoolerParticles() {
 
         // Determine attraction/repulsion based on normal
         const worldAttractingNormal = localAttractingNormal.clone()
-        worldAttractingNormal.applyQuaternion(attractors[n].quaternion)
+        worldAttractingNormal.applyQuaternion(attractors[n].mesh.quaternion)
         const dotProduct = direction.dot(worldAttractingNormal)
 
         // Apply force based on which side of the attractor

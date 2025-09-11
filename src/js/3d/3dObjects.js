@@ -8,7 +8,7 @@ import {
   createRackParticles,
   particleSystems as rackParticleSystems,
 } from './rackParticles.js'
-import { addAttractor, addAttractorToRack } from './attractors.js'
+import { addAttractor, addAttractorToRack, attractors } from './attractors.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
 export function addObjectToScene(model) {
@@ -90,6 +90,7 @@ export function deleteObject() {
       const index = models.indexOf(draggableObject)
       if (index > -1) {
         models.splice(index, 1)
+        console.log('Object removed from models array')
       }
 
       // If the object is a cooler, remove also the associated particle system
@@ -99,16 +100,37 @@ export function deleteObject() {
         )
         if (coolerParticleSystemIndex > -1) {
           coolerParticleSystems.splice(coolerParticleSystemIndex, 1)
+          console.log('Particle system removed from coolerParticleSystems array')
         }
       }
 
-      // If the object is a rack, remove also the associated particle system
+      // If the object is a rack, remove also the associated particle system and attractor
       if (draggableObject?.name === 'rack') {
         const rackParticleSystemIndex = rackParticleSystems.findIndex(
           (ps) => ps.rack === draggableObject
         )
         if (rackParticleSystemIndex > -1) {
           rackParticleSystems.splice(rackParticleSystemIndex, 1)
+          console.log('Particle system removed from rackParticleSystems array')
+        }
+
+        const attractorIndex = attractors.findIndex(
+          (a) => a.parent = draggableObject
+        )
+        if (attractorIndex > -1) {
+          attractors.splice(attractorIndex, 1)
+          console.log('Attractor removed from attractors array')
+        }
+      }
+
+      // If object is a spare attractor, remove it from rectangles
+      if (draggableObject?.name === 'attractor') {
+        const attractorIndex = attractors.findIndex(
+          (a) => a.mesh === draggableObject
+        )
+        if (attractorIndex > -1) {
+          attractors.splice(attractorIndex, 1)
+          console.log('Attractor removed from attractors array')
         }
       }
 
