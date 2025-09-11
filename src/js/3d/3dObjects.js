@@ -2,10 +2,14 @@ import * as THREE from 'three'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
 import { createCoolerParticles } from './coolerParticles.js'
 import { createRackParticles } from './rackParticles.js'
+import { addRectangle } from './rectangles.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
 export function addObjectToScene(model) {
-  console.log(model)
+  if (model === 'Rectangle') {
+    addRectangle()
+    return
+  }
   // Use a material that responds to light
   let material_obj = new THREE.MeshStandardMaterial({
     color: 0x6e6e6e, // Gray color
