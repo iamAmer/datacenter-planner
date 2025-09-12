@@ -1,4 +1,5 @@
 import paper from 'paper'
+import { createGrid, ensureGridVisible } from './floor2d.js'
 
 export function loadDxfFile(file) {
   return new Promise((resolve, reject) => {
@@ -30,6 +31,10 @@ export function loadDxfFile(file) {
           console.log(`Processing entity ${index}:`, entity)
           processDxfEntity(entity, scale, offset)
         })
+
+        // Ensure grid is visible after loading DXF
+        ensureGridVisible()
+        console.log('DXF upload: Grid ensured visible after processing')
 
         resolve({ entities })
       } catch (error) {

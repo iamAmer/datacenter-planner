@@ -7,9 +7,16 @@ const GRID_SPACING = 30
 paper.setup(canvas2D)
 
 // Create a grid background in Paper.js
-export function createGrid(spacing = GRID_SPACING, color = '#e0e0e0') {
+export function createGrid(spacing = GRID_SPACING, color = '#d0d0d0') {
+  // Remove existing grid first
+  const existingGrid = paper.project.getItem({ name: 'grid' })
+  if (existingGrid) {
+    existingGrid.remove()
+  }
+
   const bounds = paper.view.bounds
   const gridGroup = new paper.Group()
+  gridGroup.name = 'grid'
 
   for (let x = bounds.left; x <= bounds.right; x += spacing) {
     const start = new paper.Point(x, bounds.top)
@@ -17,6 +24,7 @@ export function createGrid(spacing = GRID_SPACING, color = '#e0e0e0') {
     const line = new paper.Path.Line(start, end)
     line.strokeColor = color
     line.strokeWidth = 1
+    line.opacity = 0.7 // More visible
     gridGroup.addChild(line)
   }
 
@@ -26,10 +34,30 @@ export function createGrid(spacing = GRID_SPACING, color = '#e0e0e0') {
     const line = new paper.Path.Line(start, end)
     line.strokeColor = color
     line.strokeWidth = 1
+    line.opacity = 0.7 // More visible
     gridGroup.addChild(line)
   }
 
   gridGroup.sendToBack()
+  gridGroup.visible = true
+  gridGroup.opacity = 1
+  console.log('Grid created with', gridGroup.children.length, 'lines')
+  return gridGroup
+}
+
+// Function to ensure grid is visible
+export function ensureGridVisible() {
+  let grid = paper.project.getItem({ name: 'grid' })
+  if (!grid) {
+    console.log('No grid found, creating new one')
+    grid = createGrid()
+  } else {
+    grid.visible = true
+    grid.opacity = 1
+    grid.sendToBack()
+    console.log('Grid made visible')
+  }
+  return grid
 }
 
 // Store the drawn paths (lines)
