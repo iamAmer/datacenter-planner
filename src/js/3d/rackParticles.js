@@ -4,13 +4,13 @@ import { walls } from './pathsTo3d.js'
 
 export let particleSystems = []
 
-// reduces velocity by 50% at every update on the main direction due to friction with other particles
-// increases by 50% towards the floor due to gravity and lower temperature
-// along z on the plane parrallel to the floor is constant
-const accelerations = [0.5, 1.5, 1]
+// constant low velocity along x due to small initial velocity
+// velocity increased by 50% at every update along y (hot particles going up)
+// velocity reduced at every update along z (backwards on the main direction, due to friction)
+const accelerations = [1, 1.2, 0.3]
 
-export function createCoolerParticles(coolerObject) {
-  const particleCount = 500
+export function createRackParticles(rackObject) {
+  const particleCount = 250
   const particlesGeometry = new THREE.BufferGeometry()
   const positions = new Float32Array(particleCount * 3)
   const worldPositions = new Float32Array(particleCount * 3)
@@ -20,7 +20,7 @@ export function createCoolerParticles(coolerObject) {
   const colors = new Float32Array(particleCount * 3) // Add color attribute
 
   for (let i = 0; i < particleCount; i++) {
-    initCoolerParticleProps(
+    initRackParticleProps(
       i,
       positions,
       worldPositions,
@@ -59,19 +59,20 @@ export function createCoolerParticles(coolerObject) {
   })
 
   const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial)
+  console.log(particleSystem)
 
-  // Group particles to cooler object
-  coolerObject.add(particleSystem)
+  // Group particles to rack object
+  rackObject.add(particleSystem)
 
   // Store reference for updating
   particleSystems.push({
     system: particleSystem,
     geometry: particlesGeometry,
-    cooler: coolerObject,
+    rack: rackObject,
   })
 }
 
-export function updateCoolerParticles() {
+export function updateRackParticles() {
   particleSystems.forEach((particleData) => {
     const geometry = particleData.geometry
     const positions = geometry.attributes.position.array
@@ -88,7 +89,7 @@ export function updateCoolerParticles() {
       lifetimes[particleIndex]++
       if (lifetimes[particleIndex] >= maxLifetime[particleIndex]) {
         // Reset particle
-        initCoolerParticleProps(
+        initRackParticleProps(
           particleIndex,
           positions,
           worldPositions,
@@ -104,10 +105,10 @@ export function updateCoolerParticles() {
       positions[i + 1] += velocities[i + 1] * accelerations[1]
       positions[i + 2] += velocities[i + 2] * accelerations[2]
 
-      // Add some turbulence
-      velocities[i] += (Math.random() - 0.5) * 0.001
-      velocities[i + 1] += (Math.random() - 0.5) * 0.01
-      velocities[i + 2] += (Math.random() - 0.5) * 0.02 // it expands along z-axis orthogonal to main direction x
+      // // Add some turbulence
+      // velocities[i] += (Math.random() - 0.5) * 0.0001
+      // velocities[i + 1] += (Math.random() - 0.5) * 0.0001
+      // velocities[i + 2] += (Math.random() - 0.5) * 0.0001 // it expands along z-axis orthogonal to main direction x
 
       // Check for collisions
       const particlePosition = new THREE.Vector3(
@@ -116,9 +117,9 @@ export function updateCoolerParticles() {
         positions[i + 2]
       )
 
-      // Convert particle position from local cooler space to world space
+      // Convert particle position from local rack space to world space
       const worldPosition = particlePosition.clone()
-      particleData.cooler.localToWorld(worldPosition)
+      particleData.rack.localToWorld(worldPosition)
 
       // Store current world positions for other uses
       worldPositions[i] = worldPosition['x']
@@ -134,10 +135,8 @@ export function updateCoolerParticles() {
 
       raycasterCollision.set(worldPosition, rayDirection)
 
-      // Get all objects except the cooler itself
-      const filteredObjects = models.filter(
-        (obj) => obj !== particleData.cooler
-      )
+      // Get all objects except the rack itself
+      const filteredObjects = models.filter((obj) => obj !== particleData.rack)
       // Take only the object itself without its particles if present
       const filteredObjectsMeshes = filteredObjects.map((obj) =>
         obj.getObjectByProperty('type', 'Mesh')
@@ -173,7 +172,7 @@ export function updateCoolerParticles() {
   })
 }
 
-export function initCoolerParticleProps(
+export function initRackParticleProps(
   index,
   positions,
   worldPositions,
@@ -182,24 +181,24 @@ export function initCoolerParticleProps(
   maxLifetime,
   colors
 ) {
-  // Initialize position
-  positions[index * 3] = 0 // x no offset
-  positions[index * 3 + 1] = (Math.random() - 0.5) * 0.2 + 20 // y offset
-  positions[index * 3 + 2] = (Math.random() - 0.5) * 40 // z offset
+  // Initial positions
+  positions[index * 3] = (Math.random() - 0.5) * 0.5 // x initial offset
+  positions[index * 3 + 1] = (Math.random() - 0.5) * 2.5 // y offset
+  positions[index * 3 + 2] = -(Math.random() - 0.5 + 0.8) // z offset
 
   worldPositions[index * 3] = 0
   worldPositions[index * 3 + 1] = 0
   worldPositions[index * 3 + 2] = 0 // initialy set world position to 0
 
   // Initial velocities
-  velocities[index * 3] = Math.random() * 2 // main flow direction (along X-axis)
-  velocities[index * 3 + 1] = -(Math.random() * 0.1 + 0.1) // slight downward flow
-  velocities[index * 3 + 2] = (Math.random() - 0.5) * 0.02 // slight z variation
+  velocities[index * 3] = (Math.random() - 0.5) * 0.002 // slightly random along x
+  velocities[index * 3 + 1] = (Math.random() - 0.5) * 0.002 + 0.002 // slight upward flow
+  velocities[index * 3 + 2] = -(Math.random() * 0.02 + 0.001) // mainly backwards flow due to fans
 
   // Initialize color
-  colors[index * 3] = 0.1 // Red
-  colors[index * 3 + 1] = 0.5 // Green
-  colors[index * 3 + 2] = 1.0 // Blue
+  colors[index * 3] = 1.0 // Red
+  colors[index * 3 + 1] = 0.1 // Green
+  colors[index * 3 + 2] = 0.1 // Blue
 
   // Initialize lifetime
   lifetimes[index] = Math.random() * 1000

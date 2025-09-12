@@ -2,7 +2,9 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { TransformControls } from 'three/addons/controls/TransformControls.js'
 import { updateCoolerParticles } from './coolerParticles.js'
+import { updateRackParticles } from './rackParticles.js'
 import { addObjectToScene, deleteObject } from './3dObjects.js'
+import { checkInterParticleCollisions } from './particleCollisions.js'
 
 const canvas3D = document.getElementById('canvas3D')
 
@@ -12,7 +14,7 @@ let raycasterCollision
 let draggableObject = null
 let floor
 let models = []
-let MODELS_NAME = ['cooler', 'chair', 'table', 'wall']
+let MODELS_NAME = ['cooler', 'chair', 'table', 'wall', 'rack']
 
 export {
   scene,
@@ -74,6 +76,7 @@ export function init3D() {
   floor = new THREE.Mesh(floorGeometry, floorMaterial)
   floor.rotation.x = -Math.PI / 2
   floor.position.y = 0
+  floor.name = 'floor'
   scene.add(floor)
 
   // Raycaster and mouse initialization
@@ -89,6 +92,8 @@ export function init3D() {
 function animate() {
   requestAnimationFrame(animate)
   updateCoolerParticles()
+  updateRackParticles()
+  checkInterParticleCollisions()
   render()
 }
 
