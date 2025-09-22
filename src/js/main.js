@@ -22,7 +22,6 @@ switchButton.addEventListener('click', () => {
     switchButton.textContent = 'Switch to 2D'
   } else {
     container2D.style.display = 'block'
-    container2D.style.display = 'block'
     container3D.style.display = 'none'
     switchButton.textContent = 'Switch to 3D'
   }
