@@ -1,15 +1,25 @@
 import * as THREE from 'three'
 import paper from 'paper'
 import { scene } from './scene3d.js'
+import { dxfCircles } from '../2d/dxfLoader.js'
 
 let walls = []
+let columns = []
 
 function convertPathsTo3D() {
+  // Clear existing walls
   if (walls.length > 0) {
     walls.forEach((wall) => scene.remove(wall))
     walls = []
   }
 
+  // Clear existing columns
+  if (columns.length > 0) {
+    columns.forEach((column) => scene.remove(column))
+    columns = []
+  }
+
+  // Convert 2D paths to 3D walls
   paper.project.activeLayer.children.forEach((item) => {
     if (
       item instanceof paper.Path &&
@@ -61,6 +71,33 @@ function convertPathsTo3D() {
       walls.push(wall)
     }
   })
+
+  // Convert DXF circles to 3D columns
+  dxfCircles.forEach((circleData) => {
+    const columnX = (circleData.center.x / paper.view.bounds.width) * 10 - 5
+    const columnZ = -(circleData.center.y / paper.view.bounds.height) * 10 + 5
+    const columnRadius = (circleData.radius / paper.view.bounds.width) * 10
+    const columnHeight = 3.0 // Height of the columns
+
+    // Create cylindrical column geometry
+    const columnGeometry = new THREE.CylinderGeometry(columnRadius, columnRadius, columnHeight, 16)
+    const columnMaterial = new THREE.MeshStandardMaterial({
+      color: 0x666666, // Dark gray for columns
+      opacity: 0.8,
+      transparent: true,
+    })
+    const column = new THREE.Mesh(columnGeometry, columnMaterial)
+
+    column.position.x = columnX
+    column.position.y = columnHeight / 2 // Position at ground level
+    column.position.z = -columnZ
+
+    column.name = 'column'
+    scene.add(column)
+    columns.push(column)
+
+    console.log(`Created 3D column at (${columnX}, ${columnZ}) with radius ${columnRadius}`)
+  })
 }
 
-export { walls, convertPathsTo3D }
+export { walls, columns, convertPathsTo3D }
