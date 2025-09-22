@@ -30,8 +30,8 @@ Clone the Repository:
 
 ```bash
 
-git clone https://github.com/your-username/2d-3d-converter.git
-cd 2d-3d-converter
+git clone https://github.com/your-username/datacenter-planner.git
+cd datacenter-planner
 ```
 
 Install Dependencies:
