@@ -29,6 +29,25 @@ switchButton.addEventListener('click', () => {
 
 
 
+// Handle keyboard shortcuts toggle
+const shortcutsHeader = document.getElementById('shortcutsHeader')
+const shortcutsContent = document.getElementById('shortcutsContent')
+const shortcutsArrow = document.getElementById('shortcutsArrow')
+
+let shortcutsExpanded = false // Start expanded
+
+shortcutsHeader.addEventListener('click', () => {
+  shortcutsExpanded = !shortcutsExpanded
+
+  if (shortcutsExpanded) {
+    shortcutsContent.classList.remove('collapsed')
+    shortcutsArrow.textContent = '▼'
+  } else {
+    shortcutsContent.classList.add('collapsed')
+    shortcutsArrow.textContent = '▶'
+  }
+})
+
 // Handle window resizing
 window.addEventListener('resize', () => {
   console.log('resizing...')

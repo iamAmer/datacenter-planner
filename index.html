@@ -23,13 +23,16 @@
     <div id="container3D" style="display: none;">
         <!-- info, menu and canvas are fixed so Three.js correctly calculates canvas' dimensions -->
         <div id="info">
-            <br>
-            <h3>Keyboard Shortcuts</h3>
-            <ul>
-                <li><strong>T - Translate (Move):</strong> Switches to Translate mode on X/Z axes.</li>
-                <li><strong>R - Rotate:</strong> Switches to Rotate mode on Y axis.</li>
-                <li><strong>Y - Translate Vertically:</strong> Switches to Translate mode on Y axis only.</li>
-            </ul>
+            <div id="shortcutsHeader" class="shortcuts-toggle">
+                <h3>Keyboard Shortcuts <span id="shortcutsArrow">▼</span></h3>
+            </div>
+            <div id="shortcutsContent" class="shortcuts-content">
+                <ul>
+                    <li><strong>T - Translate (Move):</strong> Switches to Translate mode on X/Z axes.</li>
+                    <li><strong>R - Rotate:</strong> Switches to Rotate mode on Y axis.</li>
+                    <li><strong>Y - Translate Vertically:</strong> Switches to Translate mode on Y axis only.</li>
+                </ul>
+            </div>
         </div>
         <div id="menuBar">
             <!-- Dropdown with Thumbnails -->
