@@ -6,7 +6,12 @@ export { canvas2D }
 const GRID_SPACING = 30
 paper.setup(canvas2D)
 
-// Create a grid background in Paper.js
+/**
+ * createGrid creates a grid background on the Paper.js canvas.
+ * @param {number} spacing 
+ * @param {string | paper.Color} color 
+ * @returns {paper.Group}
+ */
 export function createGrid(spacing = GRID_SPACING, color = '#d0d0d0') {
   // Remove existing grid first
   const existingGrid = paper.project.getItem({ name: 'grid' })
@@ -45,8 +50,16 @@ export function createGrid(spacing = GRID_SPACING, color = '#d0d0d0') {
   return gridGroup
 }
 
-// Function to ensure grid is visible
+/**
+ * ensureGridVisible ensures that a grid is visible on the canvas.
+ * If no grid exists, it creates one. If a grid exists but is hidden,
+ * it makes it visible and sends it to the back.
+ * @returns {paper.Group} The Paper.js Group representing the grid.
+ */
 export function ensureGridVisible() {
+  /**
+   * @type {paper.Item | null}
+   */
   let grid = paper.project.getItem({ name: 'grid' })
   if (!grid) {
     console.log('No grid found, creating new one')

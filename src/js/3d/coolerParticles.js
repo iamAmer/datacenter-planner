@@ -9,6 +9,20 @@ export let particleSystems = []
 // along z on the plane parrallel to the floor is constant
 const accelerations = [0.5, 1.5, 1]
 
+/**
+ * createCoolerParticles creates and attaches a particle system to a cooler object.
+ *
+ * - Initializes positions, velocities, colors, lifetimes, and other attributes.
+ * - Adds the particle system as a child of the provided cooler object.
+ * - Stores a reference in `particleSystems` for later updates.
+ *
+ * @param {THREE.Object3D} coolerObject - The cooler object to attach particles to.
+ * @returns {void} This function does not return a value.
+ *
+ * @example
+ * // When adding a cooler model:
+ * createCoolerParticles(coolerMesh);
+ */
 export function createCoolerParticles(coolerObject) {
   const particleCount = 500
   const particlesGeometry = new THREE.BufferGeometry()
@@ -71,6 +85,22 @@ export function createCoolerParticles(coolerObject) {
   })
 }
 
+/**
+ * updateCoolerParticles updates all cooler particle systems each frame.
+ *
+ * - Increments lifetimes and reinitializes expired particles.
+ * - Updates particle positions, velocities, and colors.
+ * - Performs collision detection with scene objects, walls, and the floor.
+ * - Applies acceleration factors (friction, gravity).
+ *
+ * Call this once per animation frame to animate the particles.
+ *
+ * @returns {void} This function does not return a value.
+ *
+ * @example
+ * // Inside your animation loop:
+ * updateCoolerParticles();
+ */
 export function updateCoolerParticles() {
   particleSystems.forEach((particleData) => {
     const geometry = particleData.geometry
@@ -173,6 +203,24 @@ export function updateCoolerParticles() {
   })
 }
 
+/**
+ * initCoolerParticleProps initializes (or resets) the properties of a single particle.
+ *
+ * - Sets the starting position, velocity, color, and lifetime.
+ * - Resets its world position.
+ *
+ * This is used internally by `createCoolerParticles` and
+ * `updateCoolerParticles` to spawn or reset particles.
+ *
+ * @param {number} index - Index of the particle to initialize.
+ * @param {Float32Array} positions - Buffer attribute for local positions.
+ * @param {Float32Array} worldPositions - Buffer attribute for world positions.
+ * @param {Float32Array} velocities - Buffer attribute for particle velocities.
+ * @param {Float32Array} lifetimes - Buffer attribute for particle lifetimes.
+ * @param {Float32Array} maxLifetime - Buffer attribute for max lifetimes.
+ * @param {Float32Array} colors - Buffer attribute for particle colors (r,g,b).
+ * @returns {void} This function does not return a value.
+ */
 export function initCoolerParticleProps(
   index,
   positions,

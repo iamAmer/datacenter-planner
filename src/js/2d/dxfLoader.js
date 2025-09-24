@@ -1,6 +1,12 @@
 import paper from 'paper'
-import { createGrid, ensureGridVisible } from './floor2d.js'
+import { ensureGridVisible } from './floor2d.js'
 
+/**
+ * loadDxfFile loads and parses a DXF file, scales its entities to fit the canvas,
+ * and draws them. Ensures the grid is visible after loading.
+ * @param {File} file - The DXF file selected by the user.
+ * @returns {Promise<{entities: Array<Object>}>} A promise that resolves with the parsed entities.
+ */
 export function loadDxfFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()

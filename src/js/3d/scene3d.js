@@ -28,6 +28,19 @@ export {
   floor,
 }
 
+/**
+ * init3D initializes the 3D scene, camera, renderer, controls, lights, and floor.
+ *
+ * - Sets up OrbitControls for navigation.
+ * - Adds TransformControls for object manipulation.
+ * - Creates default lighting and a floor plane.
+ * - Configures raycasters for mouse picking and collision detection.
+ * - Starts the animation loop and registers mouse click events.
+ *
+ * This should be called once on page load to set up the environment.
+ *
+ * @returns {void} This function does not return a value.
+ */
 export function init3D() {
   scene = new THREE.Scene()
   camera = new THREE.PerspectiveCamera(
