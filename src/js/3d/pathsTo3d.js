@@ -9,18 +9,8 @@ let columns = []
 /**
  * convertPathsTo3D converts 2D paths drawn with Paper.js into 3D wall meshes in Three.js.
  *
- * - Clears any existing walls and columns from the scene.
- * - Iterates over all children in the active Paper.js layer.
- * - Detects straight-line paths (at least two points, no handles) as walls.
- * - Transforms the 2D coordinates from Paper.js space into Three.js 3D coordinates.
- * - Creates and positions a 3D wall mesh (BoxGeometry) for each path.
- * - Adds each wall to the Three.js scene and stores it in the `walls` array.
+ * @returns {void}
  *
- * @returns {void} This function does not return a value.
- *
- * @example
- * // After drawing paths with Paper.js, convert them to 3D:
- * convertPathsTo3D();
  */
 function convertPathsTo3D() {
   // Clear existing walls

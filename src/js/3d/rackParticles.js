@@ -12,14 +12,8 @@ const accelerations = [1, 1.2, 0.3]
 /**
  * createRackParticles creates a particle system attached to a given rack object.
  *
- * - Initializes particle positions, velocities, lifetimes, and colors.
- * - Builds a THREE.BufferGeometry with custom attributes for each particle.
- * - Creates a THREE.PointsMaterial with vertex colors enabled.
- * - Adds the particle system as a child of the provided rack object.
- * - Stores a reference to the system in the global `particleSystems` array for updates.
- *
  * @param {THREE.Object3D} rackObject - The rack object to which the particle system will be attached.
- * @returns {void} This function does not return a value.
+ * @returns {void}
  */
 export function createRackParticles(rackObject) {
   const particleCount = 250
@@ -87,14 +81,7 @@ export function createRackParticles(rackObject) {
 /**
  * updateRackParticles updates all existing rack particle systems on each animation frame.
  *
- * - Increments particle lifetimes and resets expired particles.
- * - Updates particle positions based on velocities and accelerations.
- * - Converts local positions to world coordinates for collision testing.
- * - Performs raycasting to detect collisions with models, floor, or walls.
- * - Changes particle color and stops motion upon collision.
- * - Updates all geometry attributes to reflect the latest particle state.
- *
- * @returns {void} This function does not return a value.
+ * @returns {void}
  */
 export function updateRackParticles() {
   particleSystems.forEach((particleData) => {
@@ -198,10 +185,6 @@ export function updateRackParticles() {
 
 /**
  * initRackParticleProps initializes or resets a single particle’s properties at a given index.
- *
- * - Assigns initial local position, velocity, and color.
- * - Resets world position to zero.
- * - Initializes or resets lifetime and maximum lifetime.
  *
  * This function is called by `createRackParticles` to set up particles initially,
  * and by `updateRackParticles` to reset expired particles.

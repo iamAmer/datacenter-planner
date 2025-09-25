@@ -5,15 +5,11 @@ import { particleSystems as coolerParticleSystems } from './coolerParticles.js'
 /**
  * checkInterParticleCollisions checks for collisions between particles emitted from racks (red)
  * and particles emitted from coolers (blue).
- *
- * Iterates over all rack and cooler particle systems and calls the
- * internal `checkCollisionsBetweenSystems` function to detect and
- * handle collisions between them.
- *
+ * 
  * This should be called on each animation frame to keep particle
  * interactions up to date.
  *
- * @returns {void} This function does not return a value.
+ * @returns {void}
  */
 export function checkInterParticleCollisions() {
   rackParticleSystems.forEach((rackData) => {

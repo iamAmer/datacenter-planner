@@ -5,12 +5,8 @@ import { createRackParticles } from './rackParticles.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
 /**
- * addObjectToScene loads a 3D object (OBJ format) by its model name, applies materials,
- * scales and positions it correctly, and adds it to the scene.
- *
- * Handles specific model types:
- *  - Chair, Cooler, Table, Rack
- * and applies custom particle effects for Cooler and Rack.
+ * addObjectToScene loads a 3D object (OBJ format) by its model name.
+ * 
  * @param {string} model 
  */
 export function addObjectToScene(model) {
@@ -66,18 +62,9 @@ function aux_mesh_name(object, material, name) {
 }
 
 /**
- * deleteObject deletes the 3D object currently under the mouse raycaster from the scene.
- *
- * - Uses the `raycasterMouse` to find intersected objects from the `models` array.
- * - Traverses up the object hierarchy to find the root model that was added to the scene.
- * - Removes the object from the Three.js `scene` and from the `models` array.
- * - Detaches any transform controls attached to the object.
- *
- * @returns {void} This function does not return a value.
- *
- * @example
- * // Call when user clicks a "Delete" button or presses a key:
- * deleteObject();
+ * deleteObject deletes the 3D object from the scene.
+ * 
+ * @returns {void}
  */
 export function deleteObject() {
   const intersects = raycasterMouse.intersectObjects(models, true)

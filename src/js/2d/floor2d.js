@@ -52,9 +52,7 @@ export function createGrid(spacing = GRID_SPACING, color = '#d0d0d0') {
 
 /**
  * ensureGridVisible ensures that a grid is visible on the canvas.
- * If no grid exists, it creates one. If a grid exists but is hidden,
- * it makes it visible and sends it to the back.
- * @returns {paper.Group} The Paper.js Group representing the grid.
+ * @returns {paper.Group}
  */
 export function ensureGridVisible() {
   /**
