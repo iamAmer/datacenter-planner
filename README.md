@@ -4,7 +4,8 @@ A web-based tool to convert 2D floorplans into interactive 3D scenes. Draw a flo
 
 
 
-https://github.com/user-attachments/assets/0438c405-16a6-4abe-9681-030755bb64e5
+https://github.com/user-attachments/assets/33a40aa9-a822-4002-a02d-e649640d1324
+
 
 
 
