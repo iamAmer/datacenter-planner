@@ -63,3 +63,7 @@ npm run build
 npm run preview
 ```
 Files are now bundled by default into the [dist](/dist/) folder.
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.

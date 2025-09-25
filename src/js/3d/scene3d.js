@@ -29,6 +29,13 @@ export {
   floor,
 }
 
+/**
+ * init3D initializes the 3D scene, camera, renderer, controls, lights, and floor.
+ *
+ * This should be called once on page load to set up the environment.
+ *
+ * @returns {void}
+ */
 export function init3D() {
   scene = new THREE.Scene()
   camera = new THREE.PerspectiveCamera(
@@ -173,26 +180,27 @@ function exportSceneToJson() {
 // Add event listener for keypress
 window.addEventListener('keydown', (event) => {
   switch (event.key) {
-    case 't': // If "t" is pressed, switch to translation mode
-      transformControls.setMode('translate')
-      transformControls.showX = true
-      transformControls.showY = false
-      transformControls.showZ = true
-      break
-    case 'r': // If "r" is pressed, switch to rotation mode
-      transformControls.setMode('rotate')
-      transformControls.showX = false
-      transformControls.showY = true
-      transformControls.showZ = false
-      break
-    case 'y': // If "t" is pressed, switch to translation mode
-      transformControls.setMode('translate')
-      transformControls.showX = false
-      transformControls.showY = true
-      transformControls.showZ = false
-      break
+    case "t": // If "t" is pressed, switch to translation mode
+      setTransformMode("translate", true, false, true);
+      break;
+    case "r": // If "r" is pressed, switch to rotation mode
+      setTransformMode("rotate", false, true, false);
+      break;
+    case "y": // If "y" is pressed, switch to translation mode along Y-axis
+      setTransformMode("translate", false, true, false);
+      break;
+    default:
+      console.log(`Unhandled key: ${event.key}`);
+      break;
   }
 })
+
+function setTransformMode(mode, x, y, z) {
+  transformControls.setMode(mode);
+  transformControls.showX = x;
+  transformControls.showY = y;
+  transformControls.showZ = z;
+}
 
 window.selectImage = (imageName) => {
   const element = document.getElementById('dropdownMenuButton')

@@ -6,6 +6,12 @@ import { dxfCircles } from '../2d/dxfLoader.js'
 let walls = []
 let columns = []
 
+/**
+ * convertPathsTo3D converts 2D paths drawn with Paper.js into 3D wall meshes in Three.js.
+ *
+ * @returns {void}
+ *
+ */
 function convertPathsTo3D() {
   // Clear existing walls
   if (walls.length > 0) {

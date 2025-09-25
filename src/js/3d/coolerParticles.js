@@ -9,6 +9,12 @@ export let particleSystems = []
 // along z on the plane parrallel to the floor is constant
 const accelerations = [0.5, 1.5, 1]
 
+/**
+ * createCoolerParticles creates and attaches a particle system to a cooler object.
+ *
+ * @param {THREE.Object3D} coolerObject - The cooler object to attach particles to.
+ * @returns {void}
+ */
 export function createCoolerParticles(coolerObject) {
   const particleCount = 500
   const particlesGeometry = new THREE.BufferGeometry()
@@ -71,6 +77,11 @@ export function createCoolerParticles(coolerObject) {
   })
 }
 
+/**
+ * updateCoolerParticles updates all cooler particle systems each frame.
+ *
+ * @returns {void}
+ */
 export function updateCoolerParticles() {
   particleSystems.forEach((particleData) => {
     const geometry = particleData.geometry
@@ -173,6 +184,20 @@ export function updateCoolerParticles() {
   })
 }
 
+/**
+ * initCoolerParticleProps initializes (or resets) the properties of a single particle.
+ *
+ * Used internally by `createCoolerParticles` and `updateCoolerParticles`.
+ * 
+ * @param {number} index - Index of the particle to initialize.
+ * @param {Float32Array} positions - Buffer attribute for local positions.
+ * @param {Float32Array} worldPositions - Buffer attribute for world positions.
+ * @param {Float32Array} velocities - Buffer attribute for particle velocities.
+ * @param {Float32Array} lifetimes - Buffer attribute for particle lifetimes.
+ * @param {Float32Array} maxLifetime - Buffer attribute for max lifetimes.
+ * @param {Float32Array} colors - Buffer attribute for particle colors (r,g,b).
+ * @returns {void}
+ */
 export function initCoolerParticleProps(
   index,
   positions,
