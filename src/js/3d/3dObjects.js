@@ -4,6 +4,11 @@ import { createCoolerParticles } from './coolerParticles.js'
 import { createRackParticles } from './rackParticles.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
+/**
+ * addObjectToScene loads a 3D object (OBJ format) by its model name.
+ * 
+ * @param {string} model 
+ */
 export function addObjectToScene(model) {
   console.log(model)
   // Use a material that responds to light
@@ -56,6 +61,11 @@ function aux_mesh_name(object, material, name) {
   })
 }
 
+/**
+ * deleteObject deletes the 3D object from the scene.
+ * 
+ * @returns {void}
+ */
 export function deleteObject() {
   const intersects = raycasterMouse.intersectObjects(models, true)
   console.log(intersects[0].object)

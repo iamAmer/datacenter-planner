@@ -28,6 +28,13 @@ export {
   floor,
 }
 
+/**
+ * init3D initializes the 3D scene, camera, renderer, controls, lights, and floor.
+ *
+ * This should be called once on page load to set up the environment.
+ *
+ * @returns {void}
+ */
 export function init3D() {
   scene = new THREE.Scene()
   camera = new THREE.PerspectiveCamera(

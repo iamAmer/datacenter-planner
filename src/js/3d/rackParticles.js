@@ -9,6 +9,12 @@ export let particleSystems = []
 // velocity reduced at every update along z (backwards on the main direction, due to friction)
 const accelerations = [1, 1.2, 0.3]
 
+/**
+ * createRackParticles creates a particle system attached to a given rack object.
+ *
+ * @param {THREE.Object3D} rackObject - The rack object to which the particle system will be attached.
+ * @returns {void}
+ */
 export function createRackParticles(rackObject) {
   const particleCount = 250
   const particlesGeometry = new THREE.BufferGeometry()
@@ -72,6 +78,11 @@ export function createRackParticles(rackObject) {
   })
 }
 
+/**
+ * updateRackParticles updates all existing rack particle systems on each animation frame.
+ *
+ * @returns {void}
+ */
 export function updateRackParticles() {
   particleSystems.forEach((particleData) => {
     const geometry = particleData.geometry
@@ -172,6 +183,21 @@ export function updateRackParticles() {
   })
 }
 
+/**
+ * initRackParticleProps initializes or resets a single particle’s properties at a given index.
+ *
+ * This function is called by `createRackParticles` to set up particles initially,
+ * and by `updateRackParticles` to reset expired particles.
+ *
+ * @param {number} index - The index of the particle in the arrays.
+ * @param {Float32Array} positions - Local positions array (x, y, z per particle).
+ * @param {Float32Array} worldPositions - World positions array (x, y, z per particle).
+ * @param {Float32Array} velocities - Particle velocities array (x, y, z per particle).
+ * @param {Float32Array} lifetimes - Current lifetime for each particle.
+ * @param {Float32Array} maxLifetime - Maximum lifetime for each particle.
+ * @param {Float32Array} colors - RGB color array (r, g, b per particle).
+ * @returns {void} This function does not return a value.
+ */
 export function initRackParticleProps(
   index,
   positions,
