@@ -3,7 +3,9 @@
 A web-based tool to convert 2D floorplans into interactive 3D scenes. Draw a floorplan in a 2D canvas using Paper.js, then switch to a 3D view powered by Three.js to add and manipulate 3D models (e.g., furniture like chairs, tables, racks and coolers).
 
 
-https://github.com/user-attachments/assets/8cc3bf52-cd9a-4393-bec1-d2871687045a
+
+https://github.com/user-attachments/assets/0438c405-16a6-4abe-9681-030755bb64e5
+
 
 
 ## Features
