@@ -7,6 +7,7 @@ Thank you for your interest in contributing to datacenter-planner! We welcome co
 ### Reporting Bugs
 
 If you find a bug, please report it by opening an issue on GitHub. Include:
+
 - A clear title and description
 - Steps to reproduce the issue
 - Expected behavior
@@ -17,6 +18,7 @@ If you find a bug, please report it by opening an issue on GitHub. Include:
 ### Suggesting Features
 
 Feature requests are welcome! Please open an issue with:
+
 - A clear description of the proposed feature
 - Why it would be useful
 - Any relevant examples or mockups
@@ -26,12 +28,14 @@ Feature requests are welcome! Please open an issue with:
 1. **Fork the Repository**: Click the "Fork" button on GitHub to create your own copy.
 
 2. **Clone Your Fork**:
+
    ```bash
    git clone https://github.com/your-username/datacenter-planner.git
    cd datacenter-planner
    ```
 
 3. **Create a Branch**: Create a new branch for your changes.
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -39,22 +43,26 @@ Feature requests are welcome! Please open an issue with:
 4. **Make Changes**: Implement your changes following the code style guidelines below.
 
 5. **Test Your Changes**: Run the development server and test your changes.
+
    ```bash
    npm start
    ```
 
 6. **Run Linting**: Ensure your code passes linting.
+
    ```bash
    npx eslint .
    ```
 
 7. **Commit Your Changes**: Write clear, concise commit messages.
+
    ```bash
    git add .
    git commit -m "Add: brief description of changes"
    ```
 
 8. **Push to Your Fork**:
+
    ```bash
    git push origin feature/your-feature-name
    ```

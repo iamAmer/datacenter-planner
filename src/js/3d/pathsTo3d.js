@@ -86,7 +86,12 @@ function convertPathsTo3D() {
     const columnHeight = 3.0 // Height of the columns
 
     // Create cylindrical column geometry
-    const columnGeometry = new THREE.CylinderGeometry(columnRadius, columnRadius, columnHeight, 16)
+    const columnGeometry = new THREE.CylinderGeometry(
+      columnRadius,
+      columnRadius,
+      columnHeight,
+      16
+    )
     const columnMaterial = new THREE.MeshStandardMaterial({
       color: 0x666666, // Dark gray for columns
       opacity: 0.8,
@@ -102,7 +107,9 @@ function convertPathsTo3D() {
     scene.add(column)
     columns.push(column)
 
-    console.log(`Created 3D column at (${columnX}, ${columnZ}) with radius ${columnRadius}`)
+    console.log(
+      `Created 3D column at (${columnX}, ${columnZ}) with radius ${columnRadius}`
+    )
   })
 }
 

@@ -27,7 +27,6 @@ switchButton.addEventListener('click', () => {
   }
 })
 
-
 // Handle keyboard shortcuts toggle
 const shortcutsHeader = document.getElementById('shortcutsHeader')
 const shortcutsContent = document.getElementById('shortcutsContent')
