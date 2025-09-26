@@ -6,8 +6,8 @@ import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
 /**
  * addObjectToScene loads a 3D object (OBJ format) by its model name.
- * 
- * @param {string} model 
+ *
+ * @param {string} model
  */
 export function addObjectToScene(model) {
   console.log(model)
@@ -63,7 +63,7 @@ function aux_mesh_name(object, material, name) {
 
 /**
  * deleteObject deletes the 3D object from the scene.
- * 
+ *
  * @returns {void}
  */
 export function deleteObject() {

@@ -5,7 +5,7 @@ import { particleSystems as coolerParticleSystems } from './coolerParticles.js'
 /**
  * checkInterParticleCollisions checks for collisions between particles emitted from racks (red)
  * and particles emitted from coolers (blue).
- * 
+ *
  * This should be called on each animation frame to keep particle
  * interactions up to date.
  *

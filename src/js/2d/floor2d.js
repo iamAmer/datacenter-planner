@@ -11,8 +11,8 @@ let MAX_HISTORY_LENGTH = 50;
 
 /**
  * createGrid creates a grid background on the Paper.js canvas.
- * @param {number} spacing 
- * @param {string | paper.Color} color 
+ * @param {number} spacing
+ * @param {string | paper.Color} color
  * @returns {paper.Group}
  */
 export function createGrid(spacing = GRID_SPACING, color = '#d0d0d0') {

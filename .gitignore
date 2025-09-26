@@ -1,6 +1,6 @@
 node_modules
 LICENSE
-
+package-lock.json
 # Vite build files
 dist
 

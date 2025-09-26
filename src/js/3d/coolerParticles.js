@@ -188,7 +188,7 @@ export function updateCoolerParticles() {
  * initCoolerParticleProps initializes (or resets) the properties of a single particle.
  *
  * Used internally by `createCoolerParticles` and `updateCoolerParticles`.
- * 
+ *
  * @param {number} index - Index of the particle to initialize.
  * @param {Float32Array} positions - Buffer attribute for local positions.
  * @param {Float32Array} worldPositions - Buffer attribute for world positions.
