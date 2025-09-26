@@ -69,6 +69,19 @@ npm run preview
 ```
 Files are now bundled by default into the [dist](/dist/) folder.
 
-## Contributing
+## JSDoc
+
+Generate automatic documentation based on the `jsdoc.json` configuration:
+```bash
+npm run doc
+```
+Check the generated documentation using a local server like live-server:
+```
+npm install -g live-server
+live-server docs
+```
+
+
+# Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
