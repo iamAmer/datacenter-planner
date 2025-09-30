@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { scene, models } from './scene3d.js'
 import { particleSystems as coolerParticleSystems } from './coolerParticles.js'
 
 // Define the rectangle dimensions and position
@@ -10,35 +9,6 @@ export const localAttractingNormal = new THREE.Vector3(0, 0, 1) // Points in the
 
 // Create an array to store the attractors
 export const attractors = []
-
-export function addAttractor() {
-  const planeGeometry = new THREE.PlaneGeometry(rectangleWidth, rectangleHeight)
-  const planeMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffff00,
-    side: THREE.DoubleSide,
-  })
-  const plane = new THREE.Mesh(planeGeometry, planeMaterial)
-  plane.name = 'attractor'
-
-  // Position the rectangle so its lower edge is at y=0
-  plane.position.y = rectangleHeight / 2
-
-  scene.add(plane)
-  attractors.push({
-    mesh: plane,
-    parent: null,
-  })
-
-  // Create an arrow to represent the worldAttractingNormal vector for each rectangle
-  const normalArrow = new THREE.ArrowHelper(
-    new THREE.Vector3(0, 0, 1),
-    new THREE.Vector3(0, 0, 0),
-    1,
-    0x00ffff
-  ) // Points in the positive z direction (Blue-axis)
-  plane.add(normalArrow)
-  models.push(plane)
-}
 
 export function addAttractorToRack(rackObj) {
   const planeGeometry = new THREE.PlaneGeometry(rectangleWidth, rectangleHeight)
@@ -108,7 +78,11 @@ export function attractCoolerParticles() {
           coolerParticlesWorldPositions[particleIndex + 2]
         )
 
-        closestPointOnRectangle(particlePosition, attractors[n].mesh, closestPoint)
+        closestPointOnRectangle(
+          particlePosition,
+          attractors[n].mesh,
+          closestPoint
+        )
 
         // Calculate direction vector
         direction.subVectors(closestPoint, particlePosition)

@@ -8,7 +8,7 @@ import {
   createRackParticles,
   particleSystems as rackParticleSystems,
 } from './rackParticles.js'
-import { addAttractor, addAttractorToRack, attractors } from './attractors.js'
+import { addAttractorToRack, attractors } from './attractors.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
 /**
@@ -17,10 +17,6 @@ import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
  * @param {string} model
  */
 export function addObjectToScene(model) {
-  if (model === 'Attractor') {
-    addAttractor()
-    return
-  }
   // Use a material that responds to light
   let material_obj = new THREE.MeshStandardMaterial({
     color: 0x6e6e6e, // Gray color
@@ -110,7 +106,6 @@ export function deleteObject() {
         )
         if (coolerParticleSystemIndex > -1) {
           coolerParticleSystems.splice(coolerParticleSystemIndex, 1)
-          console.log('Particle system removed from coolerParticleSystems array')
         }
       }
 
@@ -125,18 +120,7 @@ export function deleteObject() {
         }
 
         const attractorIndex = attractors.findIndex(
-          (a) => a.parent = draggableObject
-        )
-        if (attractorIndex > -1) {
-          attractors.splice(attractorIndex, 1)
-          console.log('Attractor removed from attractors array')
-        }
-      }
-
-      // If object is a spare attractor, remove it from rectangles
-      if (draggableObject?.name === 'attractor') {
-        const attractorIndex = attractors.findIndex(
-          (a) => a.mesh === draggableObject
+          (a) => (a.parent = draggableObject)
         )
         if (attractorIndex > -1) {
           attractors.splice(attractorIndex, 1)
