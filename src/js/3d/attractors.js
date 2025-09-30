@@ -1,15 +1,32 @@
 import * as THREE from 'three'
 import { particleSystems as coolerParticleSystems } from './coolerParticles.js'
 
+/**
+ * Array storing all attractors in the scene.
+ *
+ * Each attractor is represented as an object with the following properties:
+ * - mesh: The THREE.Mesh representing the attractor plane.
+ * - parent: The THREE.Object3D that the attractor is attached to.
+ *
+ * @type {Array<{mesh: THREE.Mesh, parent: THREE.Object3D}>}
+ */
+export const attractors = []
+
 // Define the rectangle dimensions and position
 export const rectangleWidth = 1
 export const rectangleHeight = 3
 
 export const localAttractingNormal = new THREE.Vector3(0, 0, 1) // Points in the positive z direction (Blue-axis)
 
-// Create an array to store the attractors
-export const attractors = []
-
+/**
+ * Adds an attractor plane to a rack object in the 3D scene.
+ *
+ * An attractor is represented as a yellow plane with a blue normal arrow.
+ * The attractor is added to the global attractors array and attached to the rack object.
+ *
+ * @param {THREE.Object3D} rackObj - The rack object to which the attractor will be added.
+ * @returns {void}
+ */
 export function addAttractorToRack(rackObj) {
   const planeGeometry = new THREE.PlaneGeometry(rectangleWidth, rectangleHeight)
   const planeMaterial = new THREE.MeshBasicMaterial({
@@ -35,6 +52,14 @@ export function addAttractorToRack(rackObj) {
   rackObj.add(plane)
 }
 
+/**
+ * Attracts cooler particles toward attractors in the scene.
+ *
+ * This function calculates the forces exerted by attractors on cooler particles
+ * and updates the particles' velocities accordingly.
+ *
+ * @returns {void}
+ */
 export function attractCoolerParticles() {
   // If no attractors in the scene return
   if (attractors.length === 0) {
@@ -43,7 +68,7 @@ export function attractCoolerParticles() {
   // Pre-allocate vectors to avoid creating new ones in the loop
   const particlePosition = new THREE.Vector3()
   const closestPoint = new THREE.Vector3()
-  const direction = new THREE.Vector3()
+  const distanceVector = new THREE.Vector3()
   const totalForce = new THREE.Vector3()
   const localForce = new THREE.Vector3()
   // Constant parameters
@@ -84,16 +109,16 @@ export function attractCoolerParticles() {
           closestPoint
         )
 
-        // Calculate direction vector
-        direction.subVectors(closestPoint, particlePosition)
-        const distance = direction.length()
+        // Calculate distance vector
+        distanceVector.subVectors(closestPoint, particlePosition)
+        const distance = distanceVector.length()
 
         // Skip if too far away (optimization)
         if (distance > 10) continue
 
-        // Normalize direction
+        // Normalize distanceVector
         if (distance > 0.01) {
-          direction.divideScalar(distance)
+          distanceVector.divideScalar(distance)
         } else {
           continue // If too close continue (optimization)
         }
@@ -108,13 +133,13 @@ export function attractCoolerParticles() {
         // Determine attraction/repulsion based on normal
         const worldAttractingNormal = localAttractingNormal.clone()
         worldAttractingNormal.applyQuaternion(attractors[n].mesh.quaternion)
-        const dotProduct = direction.dot(worldAttractingNormal)
+        const dotProduct = distanceVector.dot(worldAttractingNormal)
 
         // Apply force based on which side of the attractor
         const finalForce = dotProduct < 0 ? forceMagnitude : -forceMagnitude
 
         // Accumulate force
-        totalForce.addScaledVector(direction, finalForce)
+        totalForce.addScaledVector(distanceVector, finalForce)
       }
 
       localForce.copy(totalForce)
@@ -131,7 +156,14 @@ export function attractCoolerParticles() {
   })
 }
 
-// Function to calculate the closest point on the rectangle to a given point
+/**
+ * Calculates the closest point on a rectangle to a given point.
+ *
+ * @param {THREE.Vector3} point - The point to find the closest point for.
+ * @param {THREE.Mesh} rectangle - The rectangle mesh.
+ * @param {THREE.Vector3} result - The vector to store the result in.
+ * @returns {void}
+ */
 function closestPointOnRectangle(point, rectangle, result) {
   // Transform point to rectangle's local space
   const localPoint = point.clone()
