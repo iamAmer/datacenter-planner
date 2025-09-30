@@ -75,6 +75,7 @@ export function attractCoolerParticles() {
   const closestPoint = new THREE.Vector3()
   const direction = new THREE.Vector3()
   const totalForce = new THREE.Vector3()
+  const localForce = new THREE.Vector3()
   // Constant parameters
   const forceStrength = 0.001
   const minDistance = 0.5
@@ -85,9 +86,13 @@ export function attractCoolerParticles() {
   // attractors.forEach((attractor, index) => {
   coolerParticleSystems.forEach((coolerData) => {
     const coolerGeometry = coolerData.geometry
+    const coolerObject = coolerData.cooler
     const coolerParticlesWorldPositions =
       coolerGeometry.attributes.worldPosition.array
     const coolerParticlesVelocities = coolerGeometry.attributes.velocity.array
+
+    // Rotation from world to local cooler space
+    const inverseCoolerQuaternion = coolerObject.quaternion.clone().invert()
 
     for (
       let particleIndex = 0;
@@ -113,10 +118,10 @@ export function attractCoolerParticles() {
         if (distance > 10) continue
 
         // Normalize direction
-        if (distance > 0.001) {
+        if (distance > 0.01) {
           direction.divideScalar(distance)
         } else {
-          direction.set(0, 1, 0) // Default direction if too close
+          continue // If too close continue (optimization)
         }
 
         // Calculate force magnitude with inverse square falloff
@@ -138,10 +143,14 @@ export function attractCoolerParticles() {
         totalForce.addScaledVector(direction, finalForce)
       }
 
+      localForce.copy(totalForce)
+      // Rotate force to the cooler local space
+      localForce.applyQuaternion(inverseCoolerQuaternion)
+
       // Add the accumulated force to the velocity
-      coolerParticlesVelocities[particleIndex] += totalForce.x
-      coolerParticlesVelocities[particleIndex + 1] += totalForce.y
-      coolerParticlesVelocities[particleIndex + 2] += totalForce.z
+      coolerParticlesVelocities[particleIndex] += localForce.x
+      coolerParticlesVelocities[particleIndex + 1] += localForce.y
+      coolerParticlesVelocities[particleIndex + 2] += localForce.z
     }
 
     coolerGeometry.attributes.velocity.needsUpdate = true
