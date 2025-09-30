@@ -1,24 +1,31 @@
 import * as THREE from 'three'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
-import { createCoolerParticles } from './coolerParticles.js'
-import { createRackParticles } from './rackParticles.js'
+import {
+  createCoolerParticles,
+  particleSystems as coolerParticleSystems,
+} from './coolerParticles.js'
+import {
+  createRackParticles,
+  particleSystems as rackParticleSystems,
+} from './rackParticles.js'
+import { addAttractorToRack, attractors } from './attractors.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
-const loadingManager = new THREE.LoadingManager();
-let activeLoads = 0;
+const loadingManager = new THREE.LoadingManager()
+let activeLoads = 0
 
 loadingManager.onStart = function() {
-  showLoadingIndicator();
-};
+  showLoadingIndicator()
+}
 
 loadingManager.onLoad = function() {
-  hideLoadingIndicator();
-};
+  hideLoadingIndicator()
+}
 
 loadingManager.onError = function(url) {
-  console.error('Error loading:', url);
-  hideLoadingIndicator();
-};
+  console.error('Error loading:', url)
+  hideLoadingIndicator()
+}
 
 /**
  * addObjectToScene loads a 3D object (OBJ format) by its model name.
@@ -26,18 +33,19 @@ loadingManager.onError = function(url) {
  * @param {string} model
  */
 export function addObjectToScene(model) {
-  console.log(model);
+  console.log(model)
   
-  activeLoads++;
-  showLoadingIndicator();
+  activeLoads++
+  showLoadingIndicator()
   
+  // Use a material that responds to light
   let material_obj = new THREE.MeshStandardMaterial({
-    color: 0x6e6e6e,
-    metalness: 0.5,
-    roughness: 0.7,
-  });
+    color: 0x6e6e6e, // Gray color
+    metalness: 0.5, // How metallic the material appears (0 = non-metal, 1 = metal)
+    roughness: 0.7, // How rough the surface is (0 = smooth, 1 = rough)
+  })
   
-  const objLoader = new OBJLoader(loadingManager);
+  const objLoader = new OBJLoader(loadingManager)
   
   objLoader.load(
     `${model}.obj`,
@@ -45,95 +53,96 @@ export function addObjectToScene(model) {
     function (object) {
       switch (model) {
         case 'Chair':
-          aux_mesh_name(object, material_obj, 'chair');
-          object.scale.setScalar(0.05);
-          break;
+          aux_mesh_name(object, material_obj, 'chair')
+          object.scale.setScalar(0.05)
+          break
         case 'Cooler':
-          aux_mesh_name(object, material_obj, 'cooler');
-          object.scale.setScalar(0.01);
-          createCoolerParticles(object);
-          break;
+          aux_mesh_name(object, material_obj, 'cooler')
+          object.scale.setScalar(0.01)
+          createCoolerParticles(object)
+          break
         case 'Table':
-          aux_mesh_name(object, material_obj, 'table');
-          object.scale.setScalar(0.8);
-          break;
+          aux_mesh_name(object, material_obj, 'table')
+          object.scale.setScalar(0.8)
+          break
         case 'Rack':
-          aux_mesh_name(object, material_obj, 'rack');
-          object.scale.setY(1.1);
-          setRackPosition(object);
-          createRackParticles(object);
-          break;
+          aux_mesh_name(object, material_obj, 'rack')
+          object.scale.setY(1.1)
+          setRackPosition(object)
+          createRackParticles(object)
+          addAttractorToRack(object)
+          break
       }
-      scene.add(object);
-      models.push(object);
+      scene.add(object)
+      models.push(object)
       
-      activeLoads--;
+      activeLoads--
       if (activeLoads === 0) {
-        hideLoadingIndicator();
+        hideLoadingIndicator()
       }
     },
     undefined, // onProgress - not needed
     // onError callback
     function (error) {
-      console.error(`Error loading ${model}:`, error);
-      activeLoads--;
+      console.error(`Error loading ${model}:`, error)
+      activeLoads--
       if (activeLoads === 0) {
-        hideLoadingIndicator();
+        hideLoadingIndicator()
       }
     }
-  );
+  )
 }
 
 // Helper functions for the loading UI
 function showLoadingIndicator() {
-  let indicator = document.getElementById('loading-indicator');
+  let indicator = document.getElementById('loading-indicator')
   if (!indicator) {
-    indicator = document.createElement('div');
-    indicator.id = 'loading-indicator';
+    indicator = document.createElement('div')
+    indicator.id = 'loading-indicator'
     indicator.innerHTML = `
       <div style="
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 20px 40px;
-        border-radius: 10px;
-        z-index: 1000;
-        text-align: center;
+        position: fixed
+        top: 50%
+        left: 50%
+        transform: translate(-50%, -50%)
+        background: rgba(0, 0, 0, 0.8)
+        color: white
+        padding: 20px 40px
+        border-radius: 10px
+        z-index: 1000
+        text-align: center
       ">
         <div class="spinner" style="
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #3498db;
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
-          animation: spin 1s linear infinite;
-          margin: 0 auto 10px;
+          border: 4px solid #f3f3f3
+          border-top: 4px solid #3498db
+          border-radius: 50%
+          width: 40px
+          height: 40px
+          animation: spin 1s linear infinite
+          margin: 0 auto 10px
         "></div>
         <div>Loading model...</div>
       </div>
-    `;
+    `
     
     // Add spinner animation
-    const style = document.createElement('style');
+    const style = document.createElement('style')
     style.textContent = `
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% { transform: rotate(0deg) }
+        100% { transform: rotate(360deg) }
       }
-    `;
-    document.head.appendChild(style);
-    document.body.appendChild(indicator);
+    `
+    document.head.appendChild(style)
+    document.body.appendChild(indicator)
   }
-  indicator.style.display = 'block';
+  indicator.style.display = 'block'
 }
 
 function hideLoadingIndicator() {
-  const indicator = document.getElementById('loading-indicator');
+  const indicator = document.getElementById('loading-indicator')
   if (indicator) {
-    indicator.style.display = 'none';
+    indicator.style.display = 'none'
   }
 }
 
@@ -158,12 +167,12 @@ function aux_mesh_name(object, material, name) {
  */
 export function deleteObject() {
   const intersects = raycasterMouse.intersectObjects(models, true)
-  console.log(intersects[0].object)
 
   // Check if there are any intersected objects
   if (intersects.length > 0) {
     // Get the parent object that was added to the models array
     let draggableObject = intersects[0].object
+    console.log(draggableObject)
 
     // Traverse up the hierarchy to find the root parent that was added to models
     while (draggableObject.parent && !models.includes(draggableObject)) {
@@ -179,6 +188,36 @@ export function deleteObject() {
       const index = models.indexOf(draggableObject)
       if (index > -1) {
         models.splice(index, 1)
+        console.log('Object removed from models array')
+      }
+
+      // If the object is a cooler, remove also the associated particle system
+      if (draggableObject?.name === 'cooler') {
+        const coolerParticleSystemIndex = coolerParticleSystems.findIndex(
+          (ps) => ps.cooler === draggableObject
+        )
+        if (coolerParticleSystemIndex > -1) {
+          coolerParticleSystems.splice(coolerParticleSystemIndex, 1)
+        }
+      }
+
+      // If the object is a rack, remove also the associated particle system and attractor
+      if (draggableObject?.name === 'rack') {
+        const rackParticleSystemIndex = rackParticleSystems.findIndex(
+          (ps) => ps.rack === draggableObject
+        )
+        if (rackParticleSystemIndex > -1) {
+          rackParticleSystems.splice(rackParticleSystemIndex, 1)
+          console.log('Particle system removed from rackParticleSystems array')
+        }
+
+        const attractorIndex = attractors.findIndex(
+          (a) => (a.parent = draggableObject)
+        )
+        if (attractorIndex > -1) {
+          attractors.splice(attractorIndex, 1)
+          console.log('Attractor removed from attractors array')
+        }
       }
 
       // Detach transform controls and reset the draggableObject variable
