@@ -54,7 +54,10 @@ export function loadDxfFile(file) {
 }
 
 function parseDxfManually(content) {
-  const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0)
+  const lines = content
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
   const entities = []
   let i = 0
 
@@ -93,17 +96,29 @@ function parseLineEntity(lines, startIndex) {
       const value = lines[i + 1]
 
       switch (code) {
-        case 10: entity.startX = parseFloat(value); break
-        case 20: entity.startY = parseFloat(value); break
-        case 11: entity.endX = parseFloat(value); break
-        case 21: entity.endY = parseFloat(value); break
+        case 10:
+          entity.startX = parseFloat(value)
+          break
+        case 20:
+          entity.startY = parseFloat(value)
+          break
+        case 11:
+          entity.endX = parseFloat(value)
+          break
+        case 21:
+          entity.endY = parseFloat(value)
+          break
       }
 
       i += 2
     }
 
-    if (entity.startX !== undefined && entity.startY !== undefined &&
-        entity.endX !== undefined && entity.endY !== undefined) {
+    if (
+      entity.startX !== undefined &&
+      entity.startY !== undefined &&
+      entity.endX !== undefined &&
+      entity.endY !== undefined
+    ) {
       entity.start = { x: entity.startX, y: entity.startY }
       entity.end = { x: entity.endX, y: entity.endY }
       entity.endIndex = i
@@ -126,15 +141,25 @@ function parseCircleEntity(lines, startIndex) {
       const value = lines[i + 1]
 
       switch (code) {
-        case 10: entity.centerX = parseFloat(value); break
-        case 20: entity.centerY = parseFloat(value); break
-        case 40: entity.radius = parseFloat(value); break
+        case 10:
+          entity.centerX = parseFloat(value)
+          break
+        case 20:
+          entity.centerY = parseFloat(value)
+          break
+        case 40:
+          entity.radius = parseFloat(value)
+          break
       }
 
       i += 2
     }
 
-    if (entity.centerX !== undefined && entity.centerY !== undefined && entity.radius !== undefined) {
+    if (
+      entity.centerX !== undefined &&
+      entity.centerY !== undefined &&
+      entity.radius !== undefined
+    ) {
       entity.center = { x: entity.centerX, y: entity.centerY }
       entity.endIndex = i
       return entity
@@ -163,9 +188,12 @@ function processDxfEntity(entity, scale = 1, offset = { x: 0, y: 0 }) {
 function calculateEntitiesBounds(entities) {
   if (entities.length === 0) return { minX: 0, minY: 0, maxX: 100, maxY: 100 }
 
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity
 
-  entities.forEach(entity => {
+  entities.forEach((entity) => {
     if (entity.type === 'LINE') {
       minX = Math.min(minX, entity.start.x, entity.end.x)
       minY = Math.min(minY, entity.start.y, entity.end.y)
@@ -237,8 +265,6 @@ function createLineFromDxf(entity, scale, offset) {
   }
 }
 
-
-
 // Global array to store circle data for 3D conversion
 export const dxfCircles = []
 
@@ -255,22 +281,25 @@ function createCircleFromDxf(entity, scale, offset) {
       center: new paper.Point(centerX, centerY),
       radius: scaledRadius,
       originalCenter: entity.center,
-      originalRadius: entity.radius
+      originalRadius: entity.radius,
     })
 
     // Display as circle in 2D view
-    const circle = new paper.Path.Circle(new paper.Point(centerX, centerY), scaledRadius)
-    circle.strokeColor = 'red'  // Different color to indicate it's a 3D column
+    const circle = new paper.Path.Circle(
+      new paper.Point(centerX, centerY),
+      scaledRadius
+    )
+    circle.strokeColor = 'red' // Different color to indicate it's a 3D column
     circle.strokeWidth = 2
     circle.fillColor = null
 
-    console.log(`Created circle for 3D column at (${centerX}, ${centerY}) with radius ${scaledRadius}`)
+    console.log(
+      `Created circle for 3D column at (${centerX}, ${centerY}) with radius ${scaledRadius}`
+    )
   } else {
     console.log('Invalid circle data:', entity)
   }
 }
-
-
 
 export function setupDxfUpload() {
   const fileInput = document.getElementById('dxfFileInput')

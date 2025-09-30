@@ -1,17 +1,18 @@
-@import "bootstrap/dist/css/bootstrap.min.css";
+@import 'bootstrap/dist/css/bootstrap.min.css';
 
-body, html {
-    margin: 0;
-    height: 100%;
-    overflow: hidden;
+body,
+html {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 #switchMode {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 10;
-    padding: 10px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  padding: 10px;
 }
 
 #container3D {
@@ -59,59 +60,68 @@ body, html {
   margin: 0;
 }
 
-#info {
-   position: absolute;
-   top: 30px;
-   left: calc(20vw + 20px);
-   max-width: 350px;
-   background: rgba(0, 0, 0, 0.8);
-   color: #ffffff;
-   padding: 15px 20px;
-   border-radius: 8px;
-   font-family: Arial, sans-serif;
-   font-size: 14px;
-   line-height: 1.4;
-   z-index: 1000;
-   pointer-events: auto; /* Allow clicking */
- }
+.info-box {
+  position: absolute;
+  top: 30px;
+  left: 20px;
+  max-width: 350px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  z-index: 1000;
+}
 
- .shortcuts-toggle {
-   cursor: pointer;
-   user-select: none;
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
- }
+#info2D {
+  top: 80px;
+  left: 15px;
+}
 
- .shortcuts-toggle h3 {
-   margin: 0;
-   font-size: 16px;
-   border-bottom: none;
-   padding-bottom: 0;
-   flex-grow: 1;
- }
+#info3D {
+  top: 20px;
+  left: 380px;
+}
 
- #shortcutsArrow {
-   font-size: 12px;
-   transition: transform 0.3s ease;
-   margin-left: 10px;
- }
+.shortcuts-toggle {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
- .shortcuts-content {
-   max-height: 200px;
-   overflow: hidden;
-   transition: max-height 0.3s ease;
- }
+.shortcuts-toggle h3 {
+  margin: 0;
+  font-size: 16px;
+  border-bottom: none;
+  padding-bottom: 0;
+  flex-grow: 1;
+}
 
- .shortcuts-content.collapsed {
-   max-height: 0;
- }
+.shortcutsArrow {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+  margin-left: 10px;
+}
 
- #shortcutsContent ul {
-   margin: 10px 0 0 0;
-   padding-left: 20px;
- }
+.shortcuts-content {
+  max-height: 200px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
 
- #shortcutsContent li {
-   margin-bottom: 8px;
- }
+.shortcuts-content.collapsed {
+  max-height: 0;
+}
+
+#shortcutsContent ul {
+  margin: 10px 0 0 0;
+  padding-left: 20px;
+}
+
+#shortcutsContent li {
+  margin-bottom: 8px;
+}
