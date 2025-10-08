@@ -30,9 +30,9 @@ export function addObjectToScene(model) {
     metalness: 0.5, // How metallic the material appears (0 = non-metal, 1 = metal)
     roughness: 0.7, // How rough the surface is (0 = smooth, 1 = rough)
   })
-  
+
   const objLoader = new OBJLoader()
-  
+
   objLoader.load(
     `${model}.obj`,
     // onLoad callback
@@ -62,12 +62,8 @@ export function addObjectToScene(model) {
       scene.add(object)
       models.push(object)
       hideLoadingIndicator()
-      
     },
-
-    function (xhr) {
-      showLoadingIndicator()
-    },
+    showLoadingIndicator(),
 
     // onError callback
     function (error) {
@@ -158,7 +154,7 @@ export function deleteObject() {
         }
 
         const attractorIndex = attractors.findIndex(
-          (a) => (a.parent === draggableObject)
+          (a) => a.parent === draggableObject
         )
         if (attractorIndex > -1) {
           attractors.splice(attractorIndex, 1)
