@@ -11,6 +11,21 @@ import {
 import { addAttractorToRack, attractors } from './attractors.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
+const loadingManager = new THREE.LoadingManager()
+
+loadingManager.onStart = function() {
+  showLoadingIndicator()
+}
+
+loadingManager.onLoad = function() {
+  hideLoadingIndicator()
+}
+
+loadingManager.onError = function(url) {
+  console.error('Error loading:', url)
+  hideLoadingIndicator()
+}
+
 /**
  * addObjectToScene loads a 3D object (OBJ format) by its model name.
  *
@@ -31,7 +46,7 @@ export function addObjectToScene(model) {
     roughness: 0.7, // How rough the surface is (0 = smooth, 1 = rough)
   })
 
-  const objLoader = new OBJLoader()
+  const objLoader = new OBJLoader(loadingManager)
 
   objLoader.load(
     `${model}.obj`,
@@ -61,13 +76,6 @@ export function addObjectToScene(model) {
       }
       scene.add(object)
       models.push(object)
-      hideLoadingIndicator()
-    },
-    showLoadingIndicator(),
-
-    // onError callback
-    function (error) {
-      console.error(`Error loading ${model}:`, error)
       hideLoadingIndicator()
     }
   )
