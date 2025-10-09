@@ -12,17 +12,16 @@ import { addAttractorToRack, attractors } from './attractors.js'
 import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
 const loadingManager = new THREE.LoadingManager()
-let activeLoads = 0
 
-loadingManager.onStart = function() {
+loadingManager.onStart = function () {
   showLoadingIndicator()
 }
 
-loadingManager.onLoad = function() {
+loadingManager.onLoad = function () {
   hideLoadingIndicator()
 }
 
-loadingManager.onError = function(url) {
+loadingManager.onError = function (url) {
   console.error('Error loading:', url)
   hideLoadingIndicator()
 }
@@ -34,19 +33,21 @@ loadingManager.onError = function(url) {
  */
 export function addObjectToScene(model) {
   console.log(model)
-  
-  activeLoads++
-  showLoadingIndicator()
-  
+
+  if (!model) {
+    console.warn('No model specified, skip loading!')
+    return
+  }
+
   // Use a material that responds to light
   let material_obj = new THREE.MeshStandardMaterial({
     color: 0x6e6e6e, // Gray color
     metalness: 0.5, // How metallic the material appears (0 = non-metal, 1 = metal)
     roughness: 0.7, // How rough the surface is (0 = smooth, 1 = rough)
   })
-  
+
   const objLoader = new OBJLoader(loadingManager)
-  
+
   objLoader.load(
     `${model}.obj`,
     // onLoad callback
@@ -75,74 +76,23 @@ export function addObjectToScene(model) {
       }
       scene.add(object)
       models.push(object)
-      
-      activeLoads--
-      if (activeLoads === 0) {
-        hideLoadingIndicator()
-      }
-    },
-    undefined, // onProgress - not needed
-    // onError callback
-    function (error) {
-      console.error(`Error loading ${model}:`, error)
-      activeLoads--
-      if (activeLoads === 0) {
-        hideLoadingIndicator()
-      }
+      hideLoadingIndicator()
     }
   )
 }
 
 // Helper functions for the loading UI
 function showLoadingIndicator() {
-  let indicator = document.getElementById('loading-indicator')
-  if (!indicator) {
-    indicator = document.createElement('div')
-    indicator.id = 'loading-indicator'
-    indicator.innerHTML = `
-      <div style="
-        position: fixed
-        top: 50%
-        left: 50%
-        transform: translate(-50%, -50%)
-        background: rgba(0, 0, 0, 0.8)
-        color: white
-        padding: 20px 40px
-        border-radius: 10px
-        z-index: 1000
-        text-align: center
-      ">
-        <div class="spinner" style="
-          border: 4px solid #f3f3f3
-          border-top: 4px solid #3498db
-          border-radius: 50%
-          width: 40px
-          height: 40px
-          animation: spin 1s linear infinite
-          margin: 0 auto 10px
-        "></div>
-        <div>Loading model...</div>
-      </div>
-    `
-    
-    // Add spinner animation
-    const style = document.createElement('style')
-    style.textContent = `
-      @keyframes spin {
-        0% { transform: rotate(0deg) }
-        100% { transform: rotate(360deg) }
-      }
-    `
-    document.head.appendChild(style)
-    document.body.appendChild(indicator)
+  const indicator = document.getElementById('loading-indicator')
+  if (indicator) {
+    indicator.style.display = 'flex'
   }
-  indicator.style.display = 'block'
 }
 
 function hideLoadingIndicator() {
   const indicator = document.getElementById('loading-indicator')
   if (indicator) {
-    indicator.style.display = 'none'
+    setTimeout(() => (indicator.style.display = 'none'), 100)
   }
 }
 
@@ -212,7 +162,7 @@ export function deleteObject() {
         }
 
         const attractorIndex = attractors.findIndex(
-          (a) => (a.parent = draggableObject)
+          (a) => a.parent === draggableObject
         )
         if (attractorIndex > -1) {
           attractors.splice(attractorIndex, 1)
