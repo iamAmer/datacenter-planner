@@ -13,15 +13,15 @@ import { scene, models, raycasterMouse, transformControls } from './scene3d.js'
 
 const loadingManager = new THREE.LoadingManager()
 
-loadingManager.onStart = function() {
+loadingManager.onStart = function () {
   showLoadingIndicator()
 }
 
-loadingManager.onLoad = function() {
+loadingManager.onLoad = function () {
   hideLoadingIndicator()
 }
 
-loadingManager.onError = function(url) {
+loadingManager.onError = function (url) {
   console.error('Error loading:', url)
   hideLoadingIndicator()
 }
